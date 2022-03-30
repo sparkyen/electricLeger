@@ -1,0 +1,49 @@
+
+<!--O'Reilly - Accelerated Hands-on Smart Contract Development with Hyperledger Fabric V2
+ # farma ledger supply chain network
+ # Author: Brian Wu
+ # load application page
+-->
+<html>
+  <head>
+    <meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Electric</title>
+    <!-- jQuery library -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <!-- Latest compiled JavaScript -->
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js"></script>
+    <link type="text/css" href="/css/index_style.css" rel="stylesheet">
+    <script src="/js/indexClient.js"></script>
+  </head>
+<body>
+  <body>
+    <div class="main">
+      <div class="box">
+        <h1>Login Form</h1>
+        <div class="category">
+          <select id="cate">
+            <option value ="producer">①电力分销商</option>
+            <option value="consumer">②消费者</option>
+          </select>
+        </div>
+        <br/><br/>
+        <form>
+          <div class="inputBox">
+            <!-- <input id="user" type="text" name="ID" autocapitalize="off" required> -->
+            <input id="user" type="text" autocapitalize="off" required>
+            <label>Username</label>
+          </div>
+          <button id="register" type="submit" style="margin-left: 15px">Register</button>
+          <span></span>
+          <button id="login" type="submit" style="margin-left: 60px">Login</button>
+        </form>
+      </div>
+    
+    
+    </div>
+  </body>
+  
+<div id="wait" style="display:none;width:69px;height:89px;border:1px solid black;position:absolute;top:50%;left:50%;padding:2px;"><img src='/images/wait.gif' width="64" height="64" /><br>Loading..</div>
+</body>
+</html>
