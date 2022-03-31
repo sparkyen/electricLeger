@@ -38,13 +38,17 @@ class PharmaLedgerContract extends Contract {
         // No default implementation for this example
         console.log('Instantiate the Elctric contract');
     }
-    async initAccount(ctx, name) {
+
+    async initAccount(ctx, name, role) {
         console.info('============= START : initAccount call ===========');
         let dt = new Date().toString(), accountID = "account-"+name;
         let accountDetail = {};
         accountDetail.name = name;
-        accountDetail.amount = 200;
-        accountDetail.balance = 5200;
+        accountDetail.role = role;
+        accountDetail.amount = 3400;
+        accountDetail.balance = 52000;
+        if(role=='supervisor') accountDetail.permission = 1;
+        else accountDetail.permission = 0;
         accountDetail.updateTime = dt;
 
         console.log(accountID + " is using");
@@ -53,6 +57,27 @@ class PharmaLedgerContract extends Contract {
 
         console.info('============= END : initAccount Done ===========');
     }
+
+    async activeAccount(ctx, name) {
+        console.info('============= START : activeAccount call ===========');
+        let dt = new Date().toString(), accountID = "account-"+name;
+        const accountAsBytes = await ctx.stub.getState(accountID);
+        if (!accountAsBytes || accountAsBytes.length === 0) {
+            throw new Error(`account ${accountID} does not exist`);
+        }
+        const strValue = Buffer.from(accountAsBytes).toString('utf8');
+        const record = JSON.parse(strValue);
+        record.permission = 1;
+        record.updateTime = dt;
+        
+        console.log(accountID + " is using");
+        console.log(record);
+        await ctx.stub.putState(accountID, Buffer.from(JSON.stringify(record)));
+
+        console.info('============= END : activeAccount Done ===========');
+    }
+
+
     async rechargeAccount(ctx, name, money) {
         console.info('============= START : rechargeAccount call ===========');
         let dt = new Date().toString(), accountID = "account-"+name;
@@ -62,15 +87,12 @@ class PharmaLedgerContract extends Contract {
         }
         const strValue = Buffer.from(accountAsBytes).toString('utf8');
         const record = JSON.parse(strValue);
-        let accountDetail = {};
-        accountDetail.name = record.name;
-        accountDetail.amount = record.amount;
-        accountDetail.balance = record.balance+money;
-        accountDetail.updateTime = dt;
+        record.balance  = record.balance+money;
+        record.updateTime = dt;
         
         console.log(accountID + " is using");
-        console.log(accountDetail);
-        await ctx.stub.putState(accountID, Buffer.from(JSON.stringify(accountDetail)));
+        console.log(record);
+        await ctx.stub.putState(accountID, Buffer.from(JSON.stringify(record)));
         console.info('============= END : rechargeAccount Done ===========');
     }
 
@@ -109,21 +131,20 @@ class PharmaLedgerContract extends Contract {
         if (!sellerAsBytes || sellerAsBytes.length === 0) {
             throw new Error(`account ${seller} does not exist`);
         }
-        const strValue1 = Buffer.from(buyerAsBytes).toString('utf8'), buyRecord = JSON.parse(strValue1);
-        const strValue2 = Buffer.from(sellerAsBytes).toString('utf8'), sellRecord = JSON.parse(strValue2);
+        const strValue1 = Buffer.from(buyerAsBytes).toString('utf8'), buyerRecord = JSON.parse(strValue1);
+        const strValue2 = Buffer.from(sellerAsBytes).toString('utf8'), sellerRecord = JSON.parse(strValue2);
         var totPrice = record.price*record.amount;
-        let buyerDetail = {}, sellerDetail = {}, isTrade = 1;
+        let isTrade = 1;
         //buyer action
-        buyerDetail.name = buyer;
-        buyerDetail.balance = buyRecord.balance-totPrice;
-        buyerDetail.amount = buyRecord.amount+record.amount;
-        buyerDetail.updateTime = dt;
+        buyerRecord.balance -= totPrice;
+        buyerRecord.amount += record.amount;
+        buyerRecord.updateTime = dt;
         //seller action
-        sellerDetail.name = seller;
-        sellerDetail.balance = sellRecord.balance+totPrice;
-        sellerDetail.amount = sellRecord.amount-record.amount;
-        sellerDetail.updateTime = dt;
-        if(buyerDetail.balance<0 || sellerDetail.amount<0) isTrade = 0;
+        sellerRecord.balance += totPrice;
+        sellerRecord.amount -= record.amount;
+        sellerRecord.updateTime = dt;
+        let msg;
+        if(buyerRecord.balance<0 || sellerRecord.amount<0 || record.available==0 || buyerRecord.permission==0 || sellerRecord.permission==0) isTrade = 0;
 
         if(isTrade==0){
             console.info('============= END : Trade failed > ACCOUNT ERROR ===========');
@@ -131,8 +152,9 @@ class PharmaLedgerContract extends Contract {
         else {
             try {
                  //2.1 删除发布信息
+                record.available = 0;
                 console.log(record);
-                await ctx.stub.deleteState(recordID);
+                await ctx.stub.putState(recordID, Buffer.from(JSON.stringify(record)));
 
                 //2.2 双方进行交易
                 console.info('----------------------------------------------');
@@ -141,10 +163,10 @@ class PharmaLedgerContract extends Contract {
                 await ctx.stub.putState("trade-"+buyer, Buffer.from(JSON.stringify(order)));
                 //2.3 更新账号信息
                 console.info('----------------------------------------------');
-                console.log(buyerDetail);
-                console.log(sellerDetail);
-                await ctx.stub.putState("account-"+buyer, Buffer.from(JSON.stringify(buyerDetail)))
-                await ctx.stub.putState("account-"+seller, Buffer.from(JSON.stringify(sellerDetail)))
+                console.log(buyerRecord);
+                console.log(sellerRecord);
+                await ctx.stub.putState("account-"+buyer, Buffer.from(JSON.stringify(buyerRecord)))
+                await ctx.stub.putState("account-"+seller, Buffer.from(JSON.stringify(sellerRecord)))
                 console.info('============= END : Create trade ===========');
             } catch (err) {
                 console.log(err);
@@ -162,6 +184,7 @@ class PharmaLedgerContract extends Contract {
         let equipment = {}, orderID;
         equipment.price = price;
         equipment.amount = amount;
+        equipment.available = 1;
         equipment.createDateTime = dt;
         if(cate=="producer") equipment.seller = name, orderID = "sell-"+name;
         else equipment.buyer = name, orderID = "purchase-"+name;
@@ -174,25 +197,27 @@ class PharmaLedgerContract extends Contract {
    
    async findByKey(ctx, name, cate) {
         let recordID = cate+"-"+name;
-        console.info('============= getting record for key: ' + recordID +"============= ");
+        console.info('============= Getting record for key: ' + recordID +"============= ");
         let value = await ctx.stub.getState(recordID);
         const strValue = Buffer.from(value).toString('utf8');
         let record;
-            try {
-                record = JSON.parse(strValue);
-                console.log(record);
-            } catch (err) {
-                console.log(err);
-                record = strValue;
-            }
+        try {
+            record = JSON.parse(strValue);
+            console.log(record);
+        } catch (err) {
+            console.log(err);
+            record = strValue;
+        }
+        console.info('============= Get record with compelteKey done ============= ');
         return JSON.stringify({
            Key: recordID, Record: record
         });
+        
    }
 
    async findHistoryByKey(ctx, name, cate) {
       let recordID = cate+"-"+name;
-      console.info('============= getting history records for key: ' + recordID+"============= ");
+      console.info('============= Getting history records for key: ' + recordID+"============= ");
       let iterator = await ctx.stub.getHistoryForKey(recordID);
       let result = [];
       let res = await iterator.next();
@@ -205,25 +230,26 @@ class PharmaLedgerContract extends Contract {
       }
       await iterator.close();
       console.info(result);
+      console.info('============= Get history records done ============= ');
       return JSON.stringify(result);
   }
 
-  async findByPartialKey(ctx, name, cate) {
-    let recordID = cate+"-"+name;
-    console.info('============= getting record for key: ' + recordID +"============= ");
-    let value = await ctx.stub.getState(recordID);
-    const strValue = Buffer.from(value).toString('utf8');
-    let record;
-        try {
-            record = JSON.parse(strValue);
-            console.log(record);
-        } catch (err) {
-            console.log(err);
-            record = strValue;
+  async findByPartialKey(ctx, startKey, endKey) {
+    console.info("============= Getting records for partialKey ============= ");
+    let iterator = await ctx.stub.getStateByRange(startKey, endKey);
+    let result = [];
+    let res = await iterator.next();
+    while (!res.done) {
+        if (res.value) {
+            const obj = JSON.parse(res.value.value.toString('utf8'));
+            result.push(obj);
         }
-    return JSON.stringify({
-       Key: recordID, Record: record
-    });
+        res = await iterator.next();
+    }
+    await iterator.close();
+    console.info(result);
+    console.info('============= Get records with partialKey done');
+    return JSON.stringify(result);
 }
 
 

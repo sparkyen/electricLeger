@@ -45,35 +45,63 @@ async function main() {
       // await contract.submitTransaction('queryByKey', "2000.002");
 
       /* 测试账户功能 */
+      //初始化
       // console.log('Submit electric initAccount request.');
-      // await contract.submitTransaction('initAccount', 'wizard');
+      // await contract.submitTransaction('initAccount', 'QingWeiJie', 'producer');
+      // console.log('Submit electric initAccount request.');
+      // await contract.submitTransaction('initAccount', 'ZhangZhiLong', 'producer');
+      // console.log('Submit electric initAccount request.');
+      // await contract.submitTransaction('initAccount', 'wizard', 'consumer');
+      // console.log('Submit electric initAccount request.');
+      // await contract.submitTransaction('initAccount', 'queen', 'consumer');
+      // console.log('Submit electric initAccount request.');
+      // await contract.submitTransaction('initAccount', 'XiaoYan', 'consumer');
+      //充值
       // console.log('Submit electric rechargeAccount request.');
       // await contract.submitTransaction('rechargeAccount', 'wizard', 1314);
+      //查询
       // console.log('Submit electric findbyKey request.');
       // await contract.submitTransaction('findByKey', 'wizard', 'account');
       // console.log('Submit electric findbyKey request.');
       // await contract.submitTransaction('findByKey', 'none', 'account');
+      //激活
+      console.log('Submit electric activeAccount request.');
+      await contract.submitTransaction('activeAccount', 'wizard');
+      console.log('Submit electric activeAccount request.');
+      await contract.submitTransaction('activeAccount', 'XiaoYan');
 
       /*测试交易功能*/
-      // console.log('Submit electric initAccount request.');
-      // await contract.submitTransaction('initAccount', 'ZhangZhiLong');
-      // console.log('Submit electric initAccount request.');
-      // await contract.submitTransaction('initAccount', 'XiaoYan');
       // console.log('Submit electric makePreTrade sell request.');
-      // await contract.submitTransaction('makePreTrade', 'ZhangZhiLong', 'producer', 11.2, 30);
+      // await contract.submitTransaction('makePreTrade', 'QingWeiJie', 'producer', 17.5, 50);
+      // console.log('Submit electric makePreTrade sell request.');
+      // await contract.submitTransaction('makePreTrade', 'ZhangZhiLong', 'producer', 9.8, 100);
       // console.log('Submit electric makePreTrade purchase request.');
-      // await contract.submitTransaction('makePreTrade', 'XiaoYan', 'consumer', 8.9, 150);
+      // await contract.submitTransaction('makePreTrade', 'XiaoYan', 'consumer', 13.5, 130);
+      // console.log('Submit electric makePreTrade purchase request.');
+      // await contract.submitTransaction('makePreTrade', 'wizard', 'consumer', 17.8, 120);
+      // console.log('Submit electric makePreTrade purchase request.');
+      // await contract.submitTransaction('makePreTrade', 'queen', 'consumer', 8.5, 370);
       // console.log('Submit electric makeTrade request.');
       // await contract.submitTransaction('makeTrade', 'ZhangZhiLong', 'XiaoYan', 'producer');
-
-      // //应为error
-      // console.log('Submit electric makeTrade request.');
-      // await contract.submitTransaction('makeTrade', 'ZhangZhiLong', 'XiaoYan', 'producer');
-
       // console.log('Submit electric makeTrade request.');
       // await contract.submitTransaction('makeTrade', 'ZhangZhiLong', 'XiaoYan', 'consumer');
-      console.log('Submit electric findHistoryByKey request.');
-      await contract.submitTransaction('findHistoryByKey', 'ZhangZhiLong', 'trade');
+
+      /*应为error*/
+      // console.log('Submit electric makeTrade request.');
+      // await contract.submitTransaction('makeTrade', 'ZhangZhiLong', 'XiaoYan', 'producer');
+
+      // console.log('Submit electric findByKey request.');
+      // await contract.submitTransaction('findByKey', 'XiaoYan', 'purchase');
+      // console.log('Submit electric findByKey request.');
+      // await contract.submitTransaction('findByKey', 'ZhangZhiLong', 'sell');
+      // console.log('Submit electric findByKey request.');
+      // await contract.submitTransaction('findByKey', 'ZhangZhiLong', 'trade');
+      // console.log('Submit electric findHistoryByKey request.');
+      // await contract.submitTransaction('findHistoryByKey', 'ZhangZhiLong', 'sell');
+      console.log('Submit electric findByPartialKey request.');
+      await contract.submitTransaction('findByPartialKey', "account-", "account-z");
+      // console.log('Submit electric findByPartialKey request.');
+      // await contract.submitTransaction('findByPartialKey', "purchase-", "purchase-z");
 
 
     //   console.log(response);
