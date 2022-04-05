@@ -78,13 +78,13 @@ $(document).ready(function(){
  });
 $("#query").click(function(){
   reset();
-  var queryUrl = urlBase+"/queryByKey";
+  var queryUrl = urlBase+"/query/queryByKey";
   var searchKey = $('#queryKey').val();
 
   $.ajax({
     type: 'GET',
     url: queryUrl,
-    data: { key: searchKey },
+    data: { key: searchKey, role: 'producer' },
     success: function(data, status, jqXHR){
       if(!data || !data.Record || !data.Record.equipmentNumber) {
         $("#queryResultEmpty").show();
@@ -115,13 +115,13 @@ $("#query").click(function(){
 });
 $("#queryHistory").click(function(){
   reset();
-  var queryUrl = urlBase+"/queryHistoryByKey";
+  var queryUrl = urlBase+"/query/queryHistoryByKey";
   var searchKey = $('#queryHistoryKey').val();
 
   $.ajax({
     type: 'GET',
     url: queryUrl,
-    data: { key: searchKey },
+    data: { key: searchKey, role: 'producer'},
     success: function(data, status, jqXHR){
       if(!data || data.length==0) {
         $("#qqueryHistoryResultEmpty").show();

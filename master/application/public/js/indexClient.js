@@ -11,14 +11,14 @@ $(document).ready(function(){
     var urlBase = "http://127.0.0.1";
     $("#register").click(function(){
       alert("======Register Running======");
-      var registerUrl = urlBase+":8080/addUser";
-      var option=$("#cate").val(); //获取选中的项
+      var role=$("#cate").val(); //获取选中的项
       var userName = $('#user').val();
+      var registerUrl = urlBase+":8080/"+role+"/account/regAccount";
       // alert(registerUrl);
       $.ajax({
           type: 'POST',
           url: registerUrl,
-          data: { userName: userName , option: option},
+          data: { userName: userName , role: role},
           success: function(data, status, jqXHR){
             console.log(data);
             if(status==='success'){
@@ -38,14 +38,14 @@ $(document).ready(function(){
     $("#login").click(function(){
       alert("======Login Running======\n");
       // window.location.href = "https://www.baidu.com";
-      var option=$("#cate").val(); //获取选中的项
+      var role=$("#cate").val(); //获取选中的项
       var userName = $('#user').val();
       loginUrl = urlBase+":8080/login"
       // alert(loginUrl);
       $.ajax({
           type: 'POST',
           url: loginUrl,
-          data: { userName: userName, option: option},
+          data: { userName: userName, role: role},
           success: function(data, status, jqXHR){
             console.log(data);
             if(status==='success'){
@@ -54,8 +54,7 @@ $(document).ready(function(){
               // targetUrl = urlBase + ":" + port;
               alert("User - "+ userName+ " was successfully login");
               // alert(userName+" login as a "+option+" at "+targetUrl);
-              window.location.href = urlBase+":8080/"+option;
-              
+              window.location.href = urlBase+":8080/"+role;
             }
           },
           error: function(xhr, textStatus, error){

@@ -13,7 +13,7 @@ const WholesalerService = require('../services/wholesalerService.js');
 const wholesalerSvcInstance = new WholesalerService();
 
 //查询模块
-const QueryService = require( "../services/queryService.js" );
+const QueryService = require( "../services/electric/queryService.js" );
 const QueryHistoryService = require( "../services/queryHistoryService.js" );
 const querySvcInstance = new QueryService();
 const queryHistorySvcInstance = new QueryHistoryService();

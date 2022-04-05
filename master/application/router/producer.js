@@ -12,14 +12,15 @@ const EquipmentService = require('../services/equipmentService.js');
 const equipmentSvcInstance = new EquipmentService();
 
 //查询模块
-const QueryService = require( "../services/queryService.js" );
+const QueryService = require( "../services/electric/queryService.js" );
 const QueryHistoryService = require( "../services/queryHistoryService.js" );
 const querySvcInstance = new QueryService();
 const queryHistorySvcInstance = new QueryHistoryService();
 
 // 主页路由
 producer.get('/', (req, res) => {
-    res.render('producer.ejs');
+  cache.put('producer', 'wizard');
+  res.render('producer.ejs');
 });
 
 producer.post('/connectTest', async (req, res, next) => {
@@ -35,7 +36,7 @@ producer.post('/connectTest', async (req, res, next) => {
 })
 
 producer.post('/makeEquipment', async (req, res, next) => {
-    console.log(req.body);
+    // console.log(req.body);
     var manufacturer = req.body.manufacturer;
     var equipmentNumber = req.body.equipmentNumber;
     var equipmentName = req.body.equipmentName;
@@ -56,45 +57,65 @@ producer.post('/makeEquipment', async (req, res, next) => {
     }
   })
 
-producer.get('/queryHistoryByKey', async (req, res, next) => {
-    console.log(req.body);
-    var userName = cache.get('producer')
-    //var userName = "brian";
-    let key = req.query.key;
-    try {
-      if(!userName || userName.lenth<1) {
-        return res.status(500).json("User is missing");
-      } else {
-        const result = await queryHistorySvcInstance.queryHistoryByKey(userName, key);
-        return res.status(200).json(result);
-      }
-    } catch (error) {
-      return res.status(500).json(error);
-    }
+// producer.get('/queryHistoryByKey', async (req, res, next) => {
+//     // console.log(req.body);
+//     var userName = cache.get('producer')
+//     let key = req.query.key;
+//     try {
+//       if(!userName || userName.lenth<1) {
+//         return res.status(500).json("User is missing");
+//       } else {
+//         const result = await querySvcInstance.queryHistoryByKey(userName, 'org1', key);
+//         // const result = await queryHistorySvcInstance.queryHistoryByKey(userName, key);
+//         console.log(result);
+//         return res.status(200).json(result);
+//       }
+//     } catch (error) {
+//       return res.status(500).json(error);
+//     }
   
-  })
+//   })
 
-producer.get('/queryByKey', async (req, res, next) => {
-    console.log(req.body);
-    var userName = cache.get('producer')
-    //var userName = "brian";
-    let key = req.query.key;
-    try {
-      if(!userName || userName.lenth<1) {
-        return res.status(500).json("User is missing");
-      } else {
-        const result = await querySvcInstance.queryByKey(userName, key);
-        return res.status(200).json(result);
-      }
-    } catch (error) {
-      return res.status(500).json(error);
-    }
+// producer.get('/queryByKey', async (req, res, next) => {
+//     // console.log(req.body);
+//     // console.log(req);
+//     var userName = cache.get('producer')
+//     let key = req.query.key;
+//     try {
+//       if(!userName || userName.lenth<1) {
+//         return res.status(500).json("User is missing");
+//       } else {
+//         const result = await querySvcInstance.queryByKey(userName, 'org1', key);
+//         // console.log(result);
+//         return res.status(200).json(result);
+//       }
+//     } catch (error) {
+//       return res.status(500).json(error);
+//     }
   
-  })
+//   })
+
+  // producer.get('/queryPartialKey', async (req, res, next) => {
+  //   // console.log(req.body);
+  //   var userName = cache.get('producer')
+  //   // let key = req.query.key;
+  //   try {
+  //     if(!userName || userName.lenth<1) {
+  //       return res.status(500).json("User is missing");
+  //     } else {
+  //       const result = await querySvcInstance.queryPartialKey(userName, 'org1', key)
+  //       console.log(result);
+  //       return res.status(200).json(result);
+  //     }
+  //   } catch (error) {
+  //     return res.status(500).json(error);
+  //   }
+  
+  // })
 
 // “关于页面”路由
-producer.get('/about', (req, res) => {
-  res.send('producer');
-});
+// producer.get('/about', (req, res) => {
+//   res.send('producer');
+// });
 
 module.exports = producer;

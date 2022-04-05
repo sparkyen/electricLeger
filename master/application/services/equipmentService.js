@@ -44,6 +44,7 @@ class EquipmentService {
       // Get addressability to farma ledger supply chain network contract
       console.log('Use org.pln.PharmaLedgerContract smart contract.');
       const contract = await network.getContract('pharmaLedgerContract', 'org.pln.PharmaLedgerContract');
+      // console.log(contract);
       // makeEquipment
       console.log('Submit pharmaledger makeEquipment transaction.');
       const response = await contract.submitTransaction('makeEquipment', manufacturer, equipmentNumber, equipmentName, ownerName);
