@@ -8,7 +8,7 @@ const accountService = require( "../services/electric/accountService" );
 const accountSvcInstance = new accountService();
 
 account.post('/regAccount', async (req, res, next) => {
-    console.log("\n======app.js_regAccount is Running======");
+    console.log("\n======account.js_regAccount is Running======");
     // alert("======app.js_addUser is Running======\n");
      console.log(req.body.userName);
      console.log(req.body.role);
@@ -31,7 +31,7 @@ account.post('/regAccount', async (req, res, next) => {
    })
 
    account.post('/initAccount', async (req, res, next) => {
-    console.log("\n======app.js_initAccount is Running======");
+    console.log("\n======account.js_initAccount is Running======");
      console.log(req.body.userName);
      console.log(req.body.role);
      var userName = req.body.userName;
@@ -53,7 +53,7 @@ account.post('/regAccount', async (req, res, next) => {
    })
 
    account.post('/activeAccount', async (req, res, next) => {
-    console.log("\n======app.js_activeAccount is Running======");
+    console.log("\n======account.js_activeAccount is Running======");
      console.log(req.body.userName);
      console.log(req.body.role);
      var userName = req.body.userName;
@@ -75,7 +75,7 @@ account.post('/regAccount', async (req, res, next) => {
    })
 
    account.post('/rechargeAccount', async (req, res, next) => {
-    console.log("\n======app.js_activeAccount is Running======");
+    console.log("\n======account.js_activeAccount is Running======");
      console.log(req.body.userName);
      console.log(req.body.role);
      console.log(req.body.money)

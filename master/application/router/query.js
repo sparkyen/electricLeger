@@ -10,21 +10,19 @@ const querySvcInstance = new queryService();
 
 query.get('/queryByKey', async (req, res, next) => {
     // console.log(req.body);
-    // console.log(req);
     let role = req.query.role;
-    console.log(role+'is using /*/queryByKey');
-    var userName = cache.get(role)
+    let userName = req.query.userName;
     let key = req.query.key;
+    console.log(role+' is using /*/queryByKey');
+    // var userName = 'wizard';
+    // var userName = cache.get(role)
+    
     try {
       if(!userName || userName.lenth<1) {
         return res.status(500).json("User is missing");
       } else {
-        let orgName;
-        if(role=='producer') orgName = 'org1';
-        else if(role=='consumer') orgName = 'org2';
-        else orgName = 'org3';
-        const result = await querySvcInstance.queryByKey(userName, orgName, key);
-        // console.log(result);
+        const result = await querySvcInstance.queryByKey(userName, role, key);
+        console.log(result);
         return res.status(200).json(result);
       }
     } catch (error) {
@@ -36,18 +34,14 @@ query.get('/queryByKey', async (req, res, next) => {
 query.get('/queryHistoryByKey', async (req, res, next) => {
   // console.log(req.body);
   let role = req.query.role;
-  console.log(role+'is using /*/queryHistoryByKey');
+  console.log(role+' is using /*/queryHistoryByKey');
   var userName = cache.get(role);
   let key = req.query.key;
   try {
     if(!userName || userName.lenth<1) {
       return res.status(500).json("User is missing");
     } else {
-      let orgName;
-      if(role=='producer') orgName = 'org1';
-      else if(role=='consumer') orgName = 'org2';
-      else orgName = 'org3';
-      const result = await querySvcInstance.queryHistoryByKey(userName, orgName, key);
+      const result = await querySvcInstance.queryHistoryByKey(userName, role, key);
       console.log(result);
       return res.status(200).json(result);
     }
@@ -60,7 +54,7 @@ query.get('/queryHistoryByKey', async (req, res, next) => {
 query.get('/queryPartialKey', async (req, res, next) => {
   // console.log(req.body);
   let role = req.query.role;
-  console.log(role+'is using /*/queryPartialKey');
+  console.log(role+' is using /*/queryPartialKey');
   var userName = cache.get(role);
   let key = req.query.key;
   try {

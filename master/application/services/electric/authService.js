@@ -20,19 +20,25 @@ class AuthService {
     const wallet = await Wallets.newFileSystemWallet('../identity/user/'+userName+'/wallet');
     // A gateway defines the peers used to access Fabric networks
     const gateway = new Gateway();
-    console.log('userName:'+ userName + " role:"+ role);
+    console.log('getGateway is running with {userName:'+ userName + ", role:"+ role+"}");
     if(!userName || userName.length<1) {
         throw ({ status: 500,  message: 'User Name is not defined.' });
     }
-    if(role!='org1'&&role!='org2'&&role!='org3') {
-        throw ({ status: 500,  message: 'role is not exist.' });
-    }
+    let orgName;
+    if(role=='producer') orgName = 'org1';
+    else if(role=='consumer') orgName = 'org2';
+    else if(role=='admin') orgName = 'org3';
+    else throw ({ status: 500,  message: 'role is not exist.' });
     try {
       // Load connection profile; will be used to locate a gateway
-      var path = '../../pln/organizations/peerOrganizations/'+role+'.example.com/connection-'+role+'.json';
+      var path = '../../pln/organizations/peerOrganizations/'+orgName+'.example.com/connection-'+orgName+'.json';
       let connectionProfile = yaml.safeLoad(fs.readFileSync(path, 'utf8'));
+      // console.log("ConnectionProfile is: ");
+      // console.log(connectionProfile.organizations);
+      // console.log("Wallet is: ");
+      // console.log(wallet);
       let connectionOptions = {
-        identity: userName,
+        identity: userName, //应用程序将从 中使用的用户身份
         wallet: wallet,
         discovery: { enabled:true, asLocalhost: true }
       };

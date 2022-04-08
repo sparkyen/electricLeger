@@ -15,7 +15,11 @@ $(document).ready(function(){
       var userName = $('#user').val();
       var registerUrl = urlBase+":8080/"+role+"/account/regAccount";
       // alert(registerUrl);
-      $.ajax({
+      if(role=='admin'){
+        alert("Role admin can not be registered");
+      }
+      else {
+        $.ajax({
           type: 'POST',
           url: registerUrl,
           data: { userName: userName , role: role},
@@ -30,9 +34,10 @@ $(document).ready(function(){
               console.log(textStatus);
               console.log(error);
               alert("MyError: "+ xhr.responseText);
-          }
-          
-      });
+          } 
+        });
+      }
+      
       return false;
      });
     $("#login").click(function(){

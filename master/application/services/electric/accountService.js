@@ -58,10 +58,12 @@ class accountService {
       gateway = await authSvcInstance.getGateway(user, role);
       const network = await gateway.getNetwork('plnchannel');
       const contract = await network.getContract('pharmaLedgerContract', 'org.pln.PharmaLedgerContract');
+      // console.log(network);
 
-      console.log('Submit pharmaledger querybyKey request.');
+      console.log('Submit pharmaledger initAccount request.');
       const response = await contract.submitTransaction('initAccount', user, role);
-      return response?JSON.parse(response):response;
+      return response;
+      //?JSON.parse(response):response;
     } catch (error) {
       console.log(`Error processing transaction. ${error}`);
       console.log(error.stack);
@@ -82,7 +84,8 @@ class accountService {
 
       console.log('Submit pharmaledger querybyKey request.');
       const response = await contract.submitTransaction('activeAccount', user);
-      return response?JSON.parse(response):response;
+      return response;
+      //?JSON.parse(response):response;
     } catch (error) {
       console.log(`Error processing transaction. ${error}`);
       console.log(error.stack);
@@ -103,7 +106,8 @@ class accountService {
 
       console.log('Submit pharmaledger querybyKey request.');
       const response = await contract.submitTransaction('rechargeAccount', user, money);
-      return response?JSON.parse(response):response;
+      return response;
+      //?JSON.parse(response):response;
     } catch (error) {
       console.log(`Error processing transaction. ${error}`);
       console.log(error.stack);

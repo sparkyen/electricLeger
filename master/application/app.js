@@ -23,20 +23,23 @@ const producer = require('./router/producer.js');
 const consumer = require('./router/consumer.js');
 const query = require('./router/query.js');
 const account = require('./router/account.js'); 
+const trade = require('./router/trade');
 
+app.use('/*/query', query);
+app.use('/*/account', account);
+app.use('/*/trade', trade);
 app.use('/index', function (req, res) {
   res.render('index.ejs');
 })
 
-app.use('/index', function (req, res) {
+app.use('/admin', function (req, res) {
   res.render('admin.ejs');
 })
 
 
 app.use('/producer', producer);
 app.use('/consumer', consumer);
-app.use('/*/query', query);
-app.use('/*/account', account);
+
 
 
  app.use('/login', async (req, res, next) => {

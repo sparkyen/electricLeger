@@ -19,7 +19,7 @@ const queryHistorySvcInstance = new QueryHistoryService();
 
 // 主页路由
 producer.get('/', (req, res) => {
-  cache.put('producer', 'wizard');
+  cache.put('producer', 'queen');
   res.render('producer.ejs');
 });
 

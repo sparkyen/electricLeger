@@ -74,8 +74,8 @@ class QueryService {
       const network = await gateway.getNetwork('plnchannel');
       const contract = await network.getContract('pharmaLedgerContract', 'org.pln.PharmaLedgerContract');
 
-      console.log('Submit pharmaledger queryHistoryByKey request.');
-      const response = await contract.submitTransaction('queryHistoryByKey', startKey, endKey);
+      console.log('Submit pharmaledger queryPartialKey request.');
+      const response = await contract.submitTransaction('queryPartialKey', startKey, endKey);
       return response?JSON.parse(response):response;
     } catch (error) {
       console.log(`Error processing transaction. ${error}`);
