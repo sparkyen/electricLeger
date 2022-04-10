@@ -34,9 +34,10 @@ query.get('/queryByKey', async (req, res, next) => {
 query.get('/queryHistoryByKey', async (req, res, next) => {
   // console.log(req.body);
   let role = req.query.role;
-  console.log(role+' is using /*/queryHistoryByKey');
-  var userName = cache.get(role);
+  let userName = req.query.userName;
   let key = req.query.key;
+  console.log(role+' is using /*/queryHistoryByKey');
+  // var userName = cache.get(role);
   try {
     if(!userName || userName.lenth<1) {
       return res.status(500).json("User is missing");
@@ -54,18 +55,16 @@ query.get('/queryHistoryByKey', async (req, res, next) => {
 query.get('/queryPartialKey', async (req, res, next) => {
   // console.log(req.body);
   let role = req.query.role;
-  console.log(role+' is using /*/queryPartialKey');
-  var userName = cache.get(role);
+  let userName = req.query.userName;
   let key = req.query.key;
+  let startKey = key+'-', endKey = key + '-z';
+  console.log(role+' is using /*/queryPartialKey');
+  // var userName = cache.get(role);
   try {
     if(!userName || userName.lenth<1) {
       return res.status(500).json("User is missing");
     } else {
-      let orgName;
-      if(role=='producer') orgName = 'org1';
-      else if(role=='consumer') orgName = 'org2';
-      else orgName = 'org3';
-      const result = await querySvcInstance.queryPartialKey(userName, orgName, key)
+      const result = await querySvcInstance.queryPartialKey(userName, role, startKey, endKey);
       console.log(result);
       return res.status(200).json(result);
     }

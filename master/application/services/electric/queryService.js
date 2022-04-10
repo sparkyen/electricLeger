@@ -75,7 +75,7 @@ class QueryService {
       const contract = await network.getContract('pharmaLedgerContract', 'org.pln.PharmaLedgerContract');
 
       console.log('Submit pharmaledger queryPartialKey request.');
-      const response = await contract.submitTransaction('queryPartialKey', startKey, endKey);
+      const response = await contract.submitTransaction('findByPartialKey', startKey, endKey);
       return response?JSON.parse(response):response;
     } catch (error) {
       console.log(`Error processing transaction. ${error}`);

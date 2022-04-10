@@ -20,7 +20,7 @@ account.post('/regAccount', async (req, res, next) => {
         return res.status(500).json("Fill in User please!");
        } else {
         var result = await accountSvcInstance.regAccount(userName, role);
-        console.log(result);
+        // console.log(result);
         let msg = 'User '+ userName + ' was successfully registered and enrolled and is ready to intreact with the fabric network';
         console.log(msg);
         return res.status(200).json(msg);
@@ -63,11 +63,11 @@ account.post('/regAccount', async (req, res, next) => {
         console.log("USER MISSING");
         return res.status(500).json("Fill in User please!");
        } else {
-        var result = await accountSvcInstance.activeAccount(userName, role);
-        console.log(result);
-        let msg = 'User '+ userName + ' was successfully active and can be used as you wish !';
-        console.log(msg);
-        return res.status(200).json(msg);
+        const result = await accountSvcInstance.activeAccount(userName, role);
+        // console.log(result);
+        // let msg = 'User '+ userName + ' was successfully active and can be used as you wish !';
+        // console.log(msg);
+        return res.status(200).json(result);
        }
      } catch (error) {
        return res.status(500).json(error);

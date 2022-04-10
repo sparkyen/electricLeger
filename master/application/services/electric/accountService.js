@@ -82,7 +82,7 @@ class accountService {
       const network = await gateway.getNetwork('plnchannel');
       const contract = await network.getContract('pharmaLedgerContract', 'org.pln.PharmaLedgerContract');
 
-      console.log('Submit pharmaledger querybyKey request.');
+      console.log('Submit pharmaledger activeAccount request.');
       const response = await contract.submitTransaction('activeAccount', user);
       return response;
       //?JSON.parse(response):response;
@@ -104,7 +104,7 @@ class accountService {
       const network = await gateway.getNetwork('plnchannel');
       const contract = await network.getContract('pharmaLedgerContract', 'org.pln.PharmaLedgerContract');
 
-      console.log('Submit pharmaledger querybyKey request.');
+      console.log('Submit pharmaledger rechargeAccount request.');
       const response = await contract.submitTransaction('rechargeAccount', user, money);
       return response;
       //?JSON.parse(response):response;
