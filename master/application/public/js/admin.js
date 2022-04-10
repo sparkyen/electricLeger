@@ -9,20 +9,17 @@
 $(document).ready(function () {
   //make sure change to your own machine ip or dmain url
   var urlBase = "http://127.0.0.1:8080/admin";
-  // var urlBase = "http://your-ip:30000";
-  var tabs = ["addToWallet", "makeEquipment", "query", "queryHistory"];
+  var tabs = ["accountTest", "tradeTest", "query"];
+  var resultTables = ["account", "sell", "purchase", "trade"];
   $("#queryResult").hide();
-  $("#addToWalletLink").click(function () {
-    showTab("addToWallet");
+  $("#accountTestLink").click(function () {
+    showTab("accountTest");
   });
-  $("#makeEquipmentLink").click(function () {
-    showTab("makeEquipment");
+  $("#tradeTestLink").click(function () {
+    showTab("tradeTest");
   });
   $("#queryLink").click(function () {
     showTab("query");
-  });
-  $("#queryHistoryLink").click(function () {
-    showTab("queryHistory");
   });
   $("#active").click(function () {
     alert("======activeButton Running======");
@@ -43,7 +40,7 @@ $(document).ready(function () {
         if (status == 'success') {
           alert("active " + userName + " successfully");
         }
-        // showTab("makeEquipment");
+        // showTab("query");
       },
       error: function (xhr, textStatus, error) {
         console.log(xhr.statusText);
@@ -73,7 +70,7 @@ $(document).ready(function () {
         if (status == 'success') {
           alert("init " + userName + " successfully");
         }
-        // showTab("makeEquipment");
+        // showTab("tradeTest");
       },
       error: function (xhr, textStatus, error) {
         console.log(xhr.statusText);
@@ -105,7 +102,7 @@ $(document).ready(function () {
         if (status == 'success') {
           alert("recharge " + userName + " with " + money + " money successfully");
         }
-        // showTab("makeEquipment");
+        // showTab("tradeTest");
       },
       error: function (xhr, textStatus, error) {
         console.log(xhr.statusText);
@@ -121,7 +118,7 @@ $(document).ready(function () {
     alert("======makeTradeButton Running======");
     var tradeUrl = urlBase + "/trade/makeTrade";
     // var formData = {}
-    alert(tradeUrl);
+    // alert(tradeUrl);
     $.ajax({
       type: 'POST',
       url: tradeUrl,
@@ -135,7 +132,7 @@ $(document).ready(function () {
         if (status == 'success') {
           alert("makeTrade successfully");
         }
-        // showTab("makeEquipment");
+        // showTab("tradeTest");
       },
       error: function (xhr, textStatus, error) {
         console.log(xhr.statusText);
@@ -151,7 +148,7 @@ $(document).ready(function () {
     alert("======makePretradeButton Running======");
     var tradeUrl = urlBase + "/trade/makePretrade";
     // var formData = {};
-    alert(tradeUrl + " using " + $('#trade-role').val());
+    // alert(tradeUrl + " using " + $('#trade-role').val());
     $.ajax({
       type: 'POST',
       url: tradeUrl,
@@ -167,7 +164,7 @@ $(document).ready(function () {
         if (status == 'success') {
           alert("makePretrade successfully");
         }
-        // showTab("makeEquipment");
+        // showTab("tradeTest");
       },
       error: function (xhr, textStatus, error) {
         console.log(xhr.statusText);
@@ -180,9 +177,10 @@ $(document).ready(function () {
   });
 
   $("#single-query").click(function () {
-    //   reset();
+    reset();
     var queryUrl = urlBase + "/query/queryByKey";
     var searchKey = $('#query-cate').val() + '-' + $('#query-username').val();
+    var cate = $('#query-cate').val();
 
     $.ajax({
       type: 'GET',
@@ -193,27 +191,22 @@ $(document).ready(function () {
         userName: $('#query-username').val()
       },
       success: function (data, status, jqXHR) {
-        if (status == 'success') {
-          alert("single query " + $('#query-username').val() + "with " + searchKey + " key successfully");
+        alert("single query " + $('#query-username').val() + "with " + searchKey + " key successfully");
+        if(!data || !data.Record) {
+          $("#queryResultEmpty").show();
+          $("#queryResult").hide();
+        } else {
+          $("#queryResult").show();
+          $("#queryResultEmpty").hide();
+          showResults(cate);
+          let tableCate = "#"+cate+"TableTboday";
+          $(tableCate).empty();
+          var tbody = $(tableCate);
+          var tr = showData(cate, data.Record);
+          // for (var i = 0; i < data.length; i++) {
+          tbody.append(tr);
+          // }
         }
-        //   showTab("makeEquipment");
-        //   if(!data || !data.Record || !data.Record.equipmentNumber) {
-        //     $("#queryResultEmpty").show();
-        //     $("#queryResult").hide();
-        //   } else {
-        //     $("#queryResult").show();
-        //     $("#queryResultEmpty").hide();
-        //     let record = data.Record;
-        //     $("#equipmentNumberOutPut").text(record.equipmentNumber);
-        //     $("#equipmentNameOutPut").text(record.equipmentName);
-        //     $("#manufacturerOutPut").text(record.manufacturer);
-        //     $("#ownerNameOutPut").text(record.ownerName);
-        //     $("#createDateTime").text(record.createDateTime);
-        //     $("#lastUpdated").text(record.lastUpdated);
-        //     $("#queryKeyRequest").text(data.Key);
-        //     $("#previousOwnerType").text(record.previousOwnerType);
-        //     $("#currentOwnerType").text(record.currentOwnerType);
-        //   }
       },
       error: function (xhr, textStatus, error) {
         console.log(xhr.statusText);
@@ -226,9 +219,10 @@ $(document).ready(function () {
   });
 
   $("#history-query").click(function () {
-    //   reset();
+    reset();
     var queryUrl = urlBase + "/query/queryHistoryByKey";
     var searchKey = $('#query-cate').val() + '-' + $('#query-username').val();
+    var cate = $('#query-cate').val();
 
     $.ajax({
       type: 'GET',
@@ -239,8 +233,22 @@ $(document).ready(function () {
         userName: $('#query-username').val()
       },
       success: function (data, status, jqXHR) {
-        if (status == 'success') {
-          alert("history query " + $('#query-username').val() + "with " + searchKey + " key successfully");
+        alert("history query " + $('#query-username').val() + "with " + searchKey + " key successfully");
+        if(!data || data.length==0) {
+          $("#queryResultEmpty").show();
+          $("#queryResult").hide();
+        } else {
+          $("#queryResult").show();
+          $("#queryResultEmpty").hide();
+          $("#historyTableTboday").empty();
+          showTable(cate);
+          let tableCate = "#"+cate+"TableTboday";
+          $(tableCate).empty();
+          var tbody = $(tableCate);
+          for (var i = 0; i < data.length; i++) {
+            var tr = showData(cate, data[i]);
+            tbody.append(tr);
+          }
         }
       },
       error: function (xhr, textStatus, error) {
@@ -255,9 +263,10 @@ $(document).ready(function () {
 
 
   $("#partial-query").click(function () {
-    //   reset();
+    reset();
     var queryUrl = urlBase + "/query/queryPartialKey";
     var searchKey = $('#query-cate').val();
+    var cate = $('#query-cate').val();
 
     $.ajax({
       type: 'GET',
@@ -268,8 +277,22 @@ $(document).ready(function () {
         userName: $('#query-username').val()
       },
       success: function (data, status, jqXHR) {
-        if (status == 'success') {
-          alert("partial query " + $('#query-username').val() + "with " + searchKey + " key successfully");
+        alert("partial query " + $('#query-username').val() + "with " + searchKey + " key successfully");
+        if(!data || data.length==0) {
+          $("#queryResultEmpty").show();
+          $("#queryResult").hide();
+        } else {
+          $("#queryResult").show();
+          $("#queryResultEmpty").hide();
+          $("#historyTableTboday").empty();
+          showTable(cate);
+          let tableCate = "#"+cate+"TableTboday";
+          $(tableCate).empty();
+          var tbody = $(tableCate);
+          for (var i = 0; i < data.length; i++) {
+            var tr = showData(cate, data[i]);
+            tbody.append(tr);
+          }
         }
       },
       error: function (xhr, textStatus, error) {
@@ -282,52 +305,7 @@ $(document).ready(function () {
     return false;
   });
 
-
-  // $("#history-query").click(function(){
-  //   reset();
-  //   var queryUrl = urlBase+"/query/queryHistoryByKey";
-  //   var searchKey = $('#queryHistoryKey').val();
-
-  //   $.ajax({
-  //     type: 'GET',
-  //     url: queryUrl,
-  //     data: { key: searchKey, role: 'producer'},
-  //     success: function(data, status, jqXHR){
-  //       if(!data || data.length==0) {
-  //         $("#queryHistoryResultEmpty").show();
-  //         $("#queryHistoryResult").hide();
-  //       } else {
-  //         $("#queryHistoryResult").show();
-  //         $("#queryHistoryResultEmpty").hide();
-  //         console.log(data);
-  //         $("#historyTableTboday").empty();
-  //         var tbody = $("#historyTableTboday");
-  //         for (var i = 0; i < data.length; i++) {
-  //             var row = data[i];
-  //             var tr = '<tr>';
-  //             tr = tr+'<th scope="col">'+ row.equipmentNumber + '</th>';
-  //             tr = tr+ '<td>'+ row.manufacturer + '</td>';
-  //             tr = tr+ '<td>'+ row.equipmentNumber + '</td>';
-  //             tr = tr+ '<td>'+ row.equipmentName + '</td>';
-  //             tr = tr+ '<td>'+ row.ownerName + '</td>';
-  //             tr = tr+ '<td>'+ row.previousOwnerType + '</td>';
-  //             tr = tr+ '<td>'+ row.currentOwnerType + '</td>';
-  //             tr = tr+ '<td>'+ row.createDateTime + '</td>';
-  //             tr = tr+ '<td>'+ row.lastUpdated + '</td>';
-  //             tr = tr+ '</tr>';
-  //             tbody.append(tr);
-  //         }
-  //       }
-  //     },
-  //     error: function(xhr, textStatus, error){
-  //         console.log(xhr.statusText);
-  //         console.log(textStatus);
-  //         console.log(error);
-  //         alert("Error: "+ xhr.responseText);
-  //     }
-  //   });
-  //   return false;
-  // });
+  //展示侧边栏所示的大页面
   function showTab(which) {
     for (let i in tabs) {
       if (tabs[i] === which) {
@@ -339,11 +317,65 @@ $(document).ready(function () {
     reset();
   }
 
+  //展示query结果选定的表格
+  function showTable(which) {
+    for (let i in resultTables) {
+      // alert("#" + resultTables[i]+"Result");
+      if (resultTables[i] === which) {
+        $("#" + resultTables[i]+"Result").show();
+      } else {
+        $("#" + resultTables[i]+"Result").hide();
+      }
+    }
+    // reset();
+  }
+  
+  //展示表格控制函数
+  function showResults(cate){
+    showTable(cate);
+    let tableCate = "#"+cate+"TableTboday";
+    return tableCate;
+  }
+
+  //填充表格数据
+  function showData(id, data){
+    var tr = '<tr>';
+    if(id=='account'){
+      tr = tr+ '<td>'+ data.name + '</th>';
+      tr = tr+ '<td>'+ data.role + '</td>';
+      tr = tr+ '<td>'+ data.balance + '</td>';
+      tr = tr+ '<td>'+ data.amount + '</td>';
+      tr = tr+ '<td>'+ data.permission + '</td>';
+      tr = tr+ '<td>'+ data.updateTime + '</td>';
+    }
+    else if(id=='sell'){
+      tr = tr+ '<td>'+ data.seller + '</th>';
+      tr = tr+ '<td>'+ data.price + '</td>';
+      tr = tr+ '<td>'+ data.amount + '</td>';
+      tr = tr+ '<td>'+ data.available + '</td>';
+      tr = tr+ '<td>'+ data.createDateTime + '</td>';
+    }
+    else if(id=='purchase'){
+      tr = tr+ '<td>'+ data.buyer + '</td>';
+      tr = tr+ '<td>'+ data.price + '</td>';
+      tr = tr+ '<td>'+ data.amount + '</td>';
+      tr = tr+ '<td>'+ data.available + '</td>';
+      tr = tr+ '<td>'+ data.createDateTime + '</td>';
+    }
+    else if(id=='trade'){
+      tr = tr+ '<td>'+ data.seller + '</th>';
+      tr = tr+ '<td>'+ data.buyer + '</td>';
+      tr = tr+ '<td>'+ data.price + '</td>';
+      tr = tr+ '<td>'+ data.amount + '</td>';
+      tr = tr+ '<td>'+ data.createDateTime + '</td>';
+    }
+    tr = tr+ '</tr>';
+    return tr;
+  }
+
   function reset() {
     $("#queryResultEmpty").hide();
     $("#queryResult").hide();
-    $("#queryHistoryResultEmpty").hide();
-    $("#queryHistoryResult").hide();
   }
 });
 $(document).ajaxStart(function () {

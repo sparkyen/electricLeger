@@ -33,6 +33,7 @@ class QueryService {
 
       console.log('Submit pharmaledger querybyKey request.');
       const response = await contract.submitTransaction('queryByKey', key);
+      console.log('querybyKey request complete.');
       return response?JSON.parse(response):response;
     } catch (error) {
       console.log(`Error processing transaction. ${error}`);
@@ -54,6 +55,7 @@ class QueryService {
 
       console.log('Submit pharmaledger queryHistoryByKey request.');
       const response = await contract.submitTransaction('queryHistoryByKey', key);
+      console.log('queryHistoryByKey request complete.');
       return response?JSON.parse(response):response;
     } catch (error) {
       console.log(`Error processing transaction. ${error}`);
@@ -75,7 +77,8 @@ class QueryService {
       const contract = await network.getContract('pharmaLedgerContract', 'org.pln.PharmaLedgerContract');
 
       console.log('Submit pharmaledger queryPartialKey request.');
-      const response = await contract.submitTransaction('findByPartialKey', startKey, endKey);
+      const response = await contract.submitTransaction('queryByPartialKey', startKey, endKey);
+      console.log('queryPartialKey request complete.');
       return response?JSON.parse(response):response;
     } catch (error) {
       console.log(`Error processing transaction. ${error}`);

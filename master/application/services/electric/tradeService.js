@@ -58,6 +58,7 @@ class TradeService {
 
       console.log('Submit pharmaledger makeTrade request.');
       const response = await contract.submitTransaction('makeTrade', seller, buyer, role);
+      console.log('makeTrade request complete.');
       return response;
       //?JSON.parse(response):response;
     } catch (error) {

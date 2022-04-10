@@ -10,10 +10,10 @@
 const fs = require('fs');
 const yaml = require('js-yaml');
 const { Wallets, Gateway } = require('fabric-network');
-const PharmaLedgerContract = require('../../../contract/lib/pharmaledgercontract.js');
+// const PharmaLedgerContract = require('../../../../../contract/lib/pharmaledgercontract.js');
 async function main() {
     // A wallet stores a collection of identities for use
-    const wallet = await Wallets.newFileSystemWallet('../../identity/user/wizard/wallet');
+    const wallet = await Wallets.newFileSystemWallet('../../../identity/user/wizard/wallet');
     // A gateway defines the peers used to access Fabric networks
     const gateway = new Gateway();
     console.log('userName: wizard');
@@ -25,7 +25,7 @@ async function main() {
     // }
     try {
       // Load connection profile; will be used to locate a gateway
-      let connectionProfile = yaml.safeLoad(fs.readFileSync('../../../pln/organizations/peerOrganizations/org1.example.com/connection-org1.json', 'utf8'));
+      let connectionProfile = yaml.safeLoad(fs.readFileSync('../../../../pln/organizations/peerOrganizations/org1.example.com/connection-org1.json', 'utf8'));
       let connectionOptions = {
         identity: "wizard",
         wallet: wallet,
@@ -51,7 +51,7 @@ async function main() {
       // console.log('Submit electric initAccount request.');
       // await contract.submitTransaction('initAccount', 'ZhangZhiLong', 'producer');
       // console.log('Submit electric initAccount request.');
-      // await contract.submitTransaction('initAccount', 'wizard', 'consumer');
+      // await contract.submitTransaction('initAccount', 'wizard', 'producer');
       // console.log('Submit electric initAccount request.');
       // await contract.submitTransaction('initAccount', 'queen', 'consumer');
       // console.log('Submit electric initAccount request.');
@@ -65,10 +65,10 @@ async function main() {
       // console.log('Submit electric findbyKey request.');
       // await contract.submitTransaction('findByKey', 'none', 'account');
       //激活
-      console.log('Submit electric activeAccount request.');
-      await contract.submitTransaction('activeAccount', 'wizard');
-      console.log('Submit electric activeAccount request.');
-      await contract.submitTransaction('activeAccount', 'XiaoYan');
+      // console.log('Submit electric activeAccount request.');
+      // await contract.submitTransaction('activeAccount', 'wizard');
+      // console.log('Submit electric activeAccount request.');
+      // await contract.submitTransaction('activeAccount', 'queen');
 
       /*测试交易功能*/
       // console.log('Submit electric makePreTrade sell request.');
@@ -78,11 +78,11 @@ async function main() {
       // console.log('Submit electric makePreTrade purchase request.');
       // await contract.submitTransaction('makePreTrade', 'XiaoYan', 'consumer', 13.5, 130);
       // console.log('Submit electric makePreTrade purchase request.');
-      // await contract.submitTransaction('makePreTrade', 'wizard', 'consumer', 17.8, 120);
+      // await contract.submitTransaction('makePreTrade', 'wizard', 'producer', 17.8, 120);
       // console.log('Submit electric makePreTrade purchase request.');
       // await contract.submitTransaction('makePreTrade', 'queen', 'consumer', 8.5, 370);
-      // console.log('Submit electric makeTrade request.');
-      // await contract.submitTransaction('makeTrade', 'ZhangZhiLong', 'XiaoYan', 'producer');
+      console.log('Submit electric makeTrade request.');
+      await contract.submitTransaction('makeTrade', 'wizard', 'queen', 'producer');
       // console.log('Submit electric makeTrade request.');
       // await contract.submitTransaction('makeTrade', 'ZhangZhiLong', 'XiaoYan', 'consumer');
 
@@ -98,8 +98,8 @@ async function main() {
       // await contract.submitTransaction('findByKey', 'ZhangZhiLong', 'trade');
       // console.log('Submit electric findHistoryByKey request.');
       // await contract.submitTransaction('findHistoryByKey', 'ZhangZhiLong', 'sell');
-      console.log('Submit electric findByPartialKey request.');
-      await contract.submitTransaction('findByPartialKey', "account-", "account-z");
+      // console.log('Submit electric queryByPartialKey request.');
+      // await contract.submitTransaction('queryByPartialKey', "account-", "account-z");
       // console.log('Submit electric findByPartialKey request.');
       // await contract.submitTransaction('findByPartialKey', "purchase-", "purchase-z");
 

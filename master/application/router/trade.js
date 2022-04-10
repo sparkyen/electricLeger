@@ -17,7 +17,7 @@ trade.post('/makePretrade', async (req, res, next) => {
     let role = req.body.role;
     var userName = role=='producer' ? req.body.seller : req.body.buyer;
     
-    console.log(role+' is using /*/makePretrade with {price:'+price+", amount:"+amount+"} ");
+    console.log('\n'+role+' is using /*/makePretrade with {price:'+price+", amount:"+amount+"} ");
     
     try {
         const result = await tradeSvcInstance.makePreTrade(userName, role, price, amount);
@@ -38,7 +38,7 @@ trade.post('/makePretrade', async (req, res, next) => {
     var seller = req.body.seller;
     var role = req.body.role;
 
-    console.log(role+' is using /*/makeTrade');
+    console.log('\n'+role+' is using /*/makeTrade');
     // var userName = 'wizard';
     // var userName = cache.get(role)
     try {

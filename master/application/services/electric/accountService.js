@@ -62,6 +62,7 @@ class accountService {
 
       console.log('Submit pharmaledger initAccount request.');
       const response = await contract.submitTransaction('initAccount', user, role);
+      console.log('initAccount request complete.');
       return response;
       //?JSON.parse(response):response;
     } catch (error) {
@@ -84,6 +85,7 @@ class accountService {
 
       console.log('Submit pharmaledger activeAccount request.');
       const response = await contract.submitTransaction('activeAccount', user);
+      console.log('activeAccount request complete.');
       return response;
       //?JSON.parse(response):response;
     } catch (error) {
@@ -106,6 +108,7 @@ class accountService {
 
       console.log('Submit pharmaledger rechargeAccount request.');
       const response = await contract.submitTransaction('rechargeAccount', user, money);
+      console.log('rechargeAccount request complete.');
       return response;
       //?JSON.parse(response):response;
     } catch (error) {

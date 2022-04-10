@@ -21,9 +21,9 @@ account.post('/regAccount', async (req, res, next) => {
        } else {
         var result = await accountSvcInstance.regAccount(userName, role);
         // console.log(result);
-        let msg = 'User '+ userName + ' was successfully registered and enrolled and is ready to intreact with the fabric network';
-        console.log(msg);
-        return res.status(200).json(msg);
+        // let msg = 'User '+ userName + ' was successfully registered and enrolled and is ready to intreact with the fabric network';
+        // console.log(msg);
+        return res.status(200).json(result);
        }
      } catch (error) {
        return res.status(500).json(error);
@@ -42,10 +42,10 @@ account.post('/regAccount', async (req, res, next) => {
         return res.status(500).json("Fill in User please!");
        } else {
         var result = await accountSvcInstance.initAccount(userName, role);
-        console.log(result);
-        let msg = 'User '+ userName + ' was successfully init';
-        console.log(msg);
-        return res.status(200).json(msg);
+        // console.log(result);
+        // let msg = 'User '+ userName + ' was successfully init';
+        // console.log(msg);
+        return res.status(200).json(result);
        }
      } catch (error) {
        return res.status(500).json(error);
@@ -88,10 +88,10 @@ account.post('/regAccount', async (req, res, next) => {
         return res.status(500).json("Fill in User please!");
        } else {
         var result = await accountSvcInstance.rechargeAccount(userName, role, money);
-        console.log(result);
-        let msg = 'User '+ userName + ' was successfully recharge '+money;
-        console.log(msg);
-        return res.status(200).json(msg);
+        // console.log(result);
+        // let msg = 'User '+ userName + ' was successfully recharge '+money;
+        // console.log(msg);
+        return res.status(200).json(result);
        }
      } catch (error) {
        return res.status(500).json(error);

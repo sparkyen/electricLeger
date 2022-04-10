@@ -13,7 +13,7 @@ query.get('/queryByKey', async (req, res, next) => {
     let role = req.query.role;
     let userName = req.query.userName;
     let key = req.query.key;
-    console.log(role+' is using /*/queryByKey');
+    console.log('\n'+role+' is using /*/queryByKey');
     // var userName = 'wizard';
     // var userName = cache.get(role)
     
@@ -36,7 +36,7 @@ query.get('/queryHistoryByKey', async (req, res, next) => {
   let role = req.query.role;
   let userName = req.query.userName;
   let key = req.query.key;
-  console.log(role+' is using /*/queryHistoryByKey');
+  console.log('\n'+role+' is using /*/queryHistoryByKey');
   // var userName = cache.get(role);
   try {
     if(!userName || userName.lenth<1) {
@@ -58,7 +58,7 @@ query.get('/queryPartialKey', async (req, res, next) => {
   let userName = req.query.userName;
   let key = req.query.key;
   let startKey = key+'-', endKey = key + '-z';
-  console.log(role+' is using /*/queryPartialKey');
+  console.log('\n'+role+' is using /*/queryPartialKey');
   // var userName = cache.get(role);
   try {
     if(!userName || userName.lenth<1) {
