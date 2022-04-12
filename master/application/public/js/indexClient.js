@@ -25,9 +25,9 @@ $(document).ready(function(){
           data: { userName: userName , role: role},
           success: function(data, status, jqXHR){
             console.log(data);
-            if(status==='success'){
+            // if(status==='success'){
               alert("User - "+ userName+ " was successfully added to wallet and is ready to intreact with the fabric network");
-            }
+            // }
           },
           error: function(xhr, textStatus, error){
               console.log(xhr.statusText);

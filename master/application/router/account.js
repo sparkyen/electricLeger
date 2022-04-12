@@ -21,9 +21,9 @@ account.post('/regAccount', async (req, res, next) => {
        } else {
         var result = await accountSvcInstance.regAccount(userName, role);
         // console.log(result);
-        // let msg = 'User '+ userName + ' was successfully registered and enrolled and is ready to intreact with the fabric network';
-        // console.log(msg);
-        return res.status(200).json(result);
+        let msg = 'User '+ userName + ' was successfully registered and enrolled and is ready to intreact with the fabric network';
+        console.log(msg);
+        return res.status(200).json(msg);
        }
      } catch (error) {
        return res.status(500).json(error);
