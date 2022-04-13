@@ -4,7 +4,7 @@
 const fs = require('fs');
 const yaml = require('js-yaml');
 const { Wallets, Gateway } = require('fabric-network');
-const PharmaLedgerContract = require('../../contract/lib/pharmaledgercontract.js');
+// const PharmaLedgerContract = require('../../contract/lib/pharmaledgercontract.js');
 class Auth {
    async connect(userName, role) {
     // alert("======connet function is running");
