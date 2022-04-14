@@ -19,7 +19,7 @@ VERBOSE="$6"
 : ${VERBOSE:="false"}
 CC_SRC_LANGUAGE=`echo "$CC_SRC_LANGUAGE" | tr [:upper:] [:lower:]`
 CC_RUNTIME_LANGUAGE=node # chaincode runtime language is node.js
-CC_SRC_PATH="../contract/"
+CC_SRC_PATH="organizations/manufacturer/contract/"
 CHINCODE_NAME="pharmaLedgerContract"
 FABRIC_CFG_PATH=$PWD/../config/
 

@@ -10,7 +10,7 @@
 const fs = require('fs');
 const yaml = require('js-yaml');
 const { Wallets, Gateway } = require('fabric-network');
-// const PharmaLedgerContract = require('../../../contract/lib/pharmaledgercontract.js');
+const PharmaLedgerContract = require('../../../contract/lib/pharmaledgercontract.js');
 
 const authService = require('./authService.js');
 const authSvcInstance = new authService();
