@@ -8,7 +8,7 @@
 //juery语法
 $(document).ready(function(){
     //make sure change to your own machine ip or dmain url
-    var urlBase = "http://127.0.0.1";
+    var urlBase = "http://43.134.203.89";
     $("#register").click(function(){
       alert("======Register Running======");
       var role=$("#cate").val(); //获取选中的项

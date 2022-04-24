@@ -8,7 +8,8 @@
 //juery语法
 $(document).ready(function () {
   //make sure change to your own machine ip or dmain url
-  var urlBase = "http://127.0.0.1:8080/admin";
+  var ipUrl = "http://43.134.203.89"
+  var urlBase = ipUrl+":8080/admin";
   var tabs = ["accountTest", "tradeTest", "query"];
   var resultTables = ["account", "sell", "purchase", "trade"];
   $("#queryResult").hide();
