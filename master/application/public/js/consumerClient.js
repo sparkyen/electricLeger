@@ -6,7 +6,7 @@
 **/
 $(document).ready(function(){
      //make sure change to your own machine ip or dmain url
-     var ipUrl = "http://43.134.203.89"
+     var ipUrl = "http://192.168.233.158"
      var urlBase = ipUrl+":8080/consumer";
     // var urlBase = "http://54.161.38.96:30001";
      var tabs =["addToWallet", "wholesalerDistribute", "query", "queryHistory"];

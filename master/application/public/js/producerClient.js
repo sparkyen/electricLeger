@@ -8,7 +8,7 @@
 //juery语法
 $(document).ready(function(){
     //make sure change to your own machine ip or dmain url
-    var ipUrl = "http://43.134.203.89"
+    var ipUrl = "http://192.168.233.158"
     var urlBase = ipUrl+":8080/producer";
     // var urlBase = "http://your-ip:30000";
      var tabs =["addToWallet", "makeEquipment", "query", "queryHistory"];

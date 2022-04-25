@@ -24,15 +24,16 @@ class TradeService {
   * 5. Submit invoke queryByKey transaction
   * 6. Process response
   **/
-  async makePreTrade(userName, role, price, amount) {
+  async makePreTrade(userName, cate, expectPrice, bottomPrice, amount) {
     let gateway;
     try {
+      var role = 'consumer';
       gateway = await authSvcInstance.getGateway(userName, role);
       const network = await gateway.getNetwork('plnchannel');
       const contract = await network.getContract('pharmaLedgerContract', 'org.pln.PharmaLedgerContract');
 
       console.log('Submit pharmaledger makePreTrade request.');
-      const response = await contract.submitTransaction('makePreTrade', userName, role, price, amount);
+      const response = await contract.submitTransaction('makePreTrade', userName, cate, expectPrice, bottomPrice, amount);
       console.log('makePreTrade request complete.');
       return response;
     } catch (error) {
@@ -46,9 +47,10 @@ class TradeService {
     }
   }
 
-  async makeTrade(seller, buyer, role) {
+  async makeTrade(seller, buyer, price, amount) {
     let gateway;
     try {
+      var role = 'consumer'
       var userName;
       if(role=='producer') userName = seller;
       else userName = buyer;
@@ -57,7 +59,7 @@ class TradeService {
       const contract = await network.getContract('pharmaLedgerContract', 'org.pln.PharmaLedgerContract');
 
       console.log('Submit pharmaledger makeTrade request.');
-      const response = await contract.submitTransaction('makeTrade', seller, buyer, role);
+      const response = await contract.submitTransaction('makeTrade', seller, buyer, price, amount);
       console.log('makeTrade request complete.');
       return response;
       //?JSON.parse(response):response;

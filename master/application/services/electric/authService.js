@@ -16,8 +16,9 @@ class AuthService {
   * 2. Connect to network gateway
   **/
   async getGateway(userName, role) {
-    // A wallet stores a collection of identities for use
-    const wallet = await Wallets.newFileSystemWallet('../identity/user/'+userName+'/wallet');
+    // A wallet stores a collection of identities for use  /home/sean/project/electric/master/identity/user
+    // const wallet = await Wallets.newFileSystemWallet('../identity/user/'+userName+'/wallet');
+    const wallet = await Wallets.newFileSystemWallet('/home/sean/project/electric/master/identity/user/'+userName+'/wallet');
     // A gateway defines the peers used to access Fabric networks
     const gateway = new Gateway();
     console.log('getGateway is running with {userName:'+ userName + ", role:"+ role+"}");
@@ -31,7 +32,8 @@ class AuthService {
     else throw ({ status: 500,  message: 'role is not exist.' });
     try {
       // Load connection profile; will be used to locate a gateway
-      var path = '../../pln/organizations/peerOrganizations/'+orgName+'.example.com/connection-'+orgName+'.json';
+      // var path = '../../pln/organizations/peerOrganizations/'+orgName+'.example.com/connection-'+orgName+'.json';
+      var path = '/home/sean/project/electric/pln/organizations/peerOrganizations/'+orgName+'.example.com/connection-'+orgName+'.json'
       let connectionProfile = yaml.safeLoad(fs.readFileSync(path, 'utf8'));
       // console.log("ConnectionProfile is: ");
       // console.log(connectionProfile.organizations);

@@ -40,10 +40,10 @@ describe('Electric Trade Tests', () => {
 
     let transactionContext, chaincodeStub, asset;
     beforeEach(() => {
-        output = '';
-        console.log = (msg) => {
-            output += msg + '\n';
-        };
+        // output = '';
+        // console.log = (msg) => {
+        //     output += msg + '\n';
+        // };
 
         transactionContext = new Context();
 
@@ -201,13 +201,13 @@ describe('Electric Trade Tests', () => {
                 await electricTrade.activeAccount(transactionContext, 'queen');
                 await electricTrade.makePreTrade(transactionContext, 'wizard', 'sell', 12.4, 8.7, 240);
                 await electricTrade.makePreTrade(transactionContext, 'queen', 'purchase', 9.2, 11.5, 69);
-                await electricTrade.makeTrade(transactionContext, 'wizard', 'queen');
+                await electricTrade.makeTrade(transactionContext, 'wizard', 'queen', 10, 55);
                 let ret = JSON.parse((await chaincodeStub.getState('trade-wizard')).toString());
                 expect(ret).to.include({
                     seller: 'wizard',
                     buyer: 'queen',
-                    price: 10.8,
-                    amount: 69,
+                    price: 10,
+                    amount: 55,
                   });
             });
             // it('should return error on ', async () => {

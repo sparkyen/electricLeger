@@ -5,6 +5,9 @@
  # QueryService -queryByKey:
  */
 'use strict';
+const fs = require('fs');
+const yaml = require('js-yaml');
+const { Wallets, Gateway } = require('fabric-network');
 const accountService = require('../electric/accountService');
 const queryService = require('../electric/queryService');
 const tradeService = require('../electric/tradeService');
@@ -23,24 +26,34 @@ function randomFloat(m, n) {
     return parseFloat((Math.random() * (n - m) + m).toFixed(2));
 }
 
-async function dataGenerater(role, num, minPrice, maxPrice, minAmount, maxAmount) {
-    let id = 0,
+function randomString(length) {
+    var str = 'abcdefghijklmnopqrstuvwxyz';
+    var result = '';
+    for (var i = length; i > 0; --i) 
+        result += str[Math.floor(Math.random() * str.length)];
+    return result;
+}
+
+async function dataGenerater(cate, num, minPrice, maxPrice, minAmount, maxAmount) {
+    let id = 1;
     // data = [];
-    while (id < num) {
+    while (id <= num) {
         let dataDetail = {};
-        dataDetail.name = id, id = id + 1;
-        dataDetail.expectPrice = this.randomFloat(minPrice, maxPrice);
-        if (role == 'seller') {
-            dataDetail.bottomPrice = this.randomFloat(minPrice, dataDetail.expectPrice);
+        dataDetail.name = randomString(3), id = id + 1;
+        dataDetail.expectPrice = randomFloat(minPrice, maxPrice);
+        if (cate == 'sell') {
+            dataDetail.bottomPrice = randomFloat(minPrice, dataDetail.expectPrice);
         }
         else {
-            dataDetail.bottomPrice = this.randomFloat(dataDetail.expectPrice, maxPrice);
+            dataDetail.bottomPrice = randomFloat(dataDetail.expectPrice, maxPrice);
         }
             
-        dataDetail.amount = this.randomNum(minAmount, maxAmount);
-        await accountSvcInstance.regAccount(dataDetail.name, role);
-        await accountSvcInstance.activeAccount(dataDetail.name, role);
-        await tradeSvcInstance.makePreTrade(dataDetail.name, role, dataDetail.expectPrice, dataDetail.bottomPrice, dataDetail.amount);
+        dataDetail.amount = randomNum(minAmount, maxAmount);
+        console.log('============== begin to generat data ==============');
+        await accountSvcInstance.regAccount(dataDetail.name, 'consumer');
+        await accountSvcInstance.initAccount(dataDetail.name, 'consumer')
+        await accountSvcInstance.activeAccount(dataDetail.name, 'consumer');
+        await tradeSvcInstance.makePreTrade(dataDetail.name, cate, dataDetail.expectPrice, dataDetail.bottomPrice, dataDetail.amount);
         // data.push(dataDetail);
         
     }
@@ -51,13 +64,15 @@ async function dataGenerater(role, num, minPrice, maxPrice, minAmount, maxAmount
 async function generate(sellerNum, buyerNum) {
     // var data = [];
     // var sellerData = 
-    dataGenerater('seller', sellerNum, 4.5, 9.8, 120, 240).sort((a, b) =>{
-        return a.expectPrice - b.expectPrice;
-    });
+    await dataGenerater('sell', sellerNum, 4.5, 9.8, 120, 240); 
+    // .sort((a, b) =>{
+    //     return a.expectPrice - b.expectPrice;
+    // });
     // var buyerData = 
-    dataGenerater('buyer', buyerNum, 2.3, 7.8, 50, 130).sort((a, b) =>{
-        return b.expectPrice - a.expectPrice;
-    });
+    await dataGenerater('buy', buyerNum, 2.3, 7.8, 50, 130);
+    // .sort((a, b) =>{
+    //     return b.expectPrice - a.expectPrice;
+    // });
     // data.push(sellerData), data.push(buyerData);
     // console.log('Seller: '), console.log(sellerData);
     // console.log('Buyer: '), console.log(buyerData);
@@ -65,7 +80,7 @@ async function generate(sellerNum, buyerNum) {
 }
 
 async function main() {
-    await generate(89, 73);
+    // await generate(6, 4);
     acutionSvcInstance.excute();
 }
 

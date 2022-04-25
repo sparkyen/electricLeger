@@ -103,7 +103,7 @@ class ElectricContract extends Contract {
         console.info('============= END : Create preTrade ===========');
     }
 
-    async makeTrade(ctx, seller, buyer) {
+    async makeTrade(ctx, seller, buyer, price, amount) {
 
         // function getRecord
         console.info('============= START : makeTrade call ===========');
@@ -112,6 +112,8 @@ class ElectricContract extends Contract {
         let order = {};
         order.seller = seller;
         order.buyer = buyer;
+        order.price = price;
+        order.amount = amount;
         //1.1 获取交易细节
         var purchaseRecordID = "purchase-" + buyer;
         var sellRecordID = "sell-" + seller;
@@ -131,8 +133,8 @@ class ElectricContract extends Contract {
         try {
             sellRecord = JSON.parse(sellStrValue);
             purchaseRecord = JSON.parse(purchaseStrValue);
-            order.price = (parseFloat(sellRecord.expectPrice)+parseFloat(purchaseRecord.expectPrice))/2
-            order.amount = Math.min(sellRecord.amount, purchaseRecord.amount)
+            // order.price = (parseFloat(sellRecord.expectPrice)+parseFloat(purchaseRecord.expectPrice))/2
+            // order.amount = Math.min(sellRecord.amount, purchaseRecord.amount)
             sellRecord.amount = parseFloat(sellRecord.amount)-parseFloat(order.amount);
             purchaseRecord.amount = parseFloat(purchaseRecord.amount)-parseFloat(order.amount);
             order.createDateTime = dt;

@@ -20,6 +20,7 @@ const authSvcInstance = new authService();
 
 class accountService {
   async regAccount(user, role) {
+    console.log("============= regAccount > user: "+user+", role: "+role+" ==================");
     try {
       if (!user || user.length < 1) {
         throw ({
@@ -28,7 +29,11 @@ class accountService {
         });
       }
       // A wallet stores a collection of identities
-      const wallet = await Wallets.newFileSystemWallet('../identity/user/' + user + '/wallet');
+      // const wallet = await Wallets.newFileSystemWallet('../identity/user/' + user + '/wallet');
+      // /home/sean/project/electric/master/identity/user
+
+      // console.log(('/home/sean/project/electric/master/identity/user' + user + '/wallet'));
+      const wallet = await Wallets.newFileSystemWallet('/home/sean/project/electric/master/identity/user/' + user + '/wallet');
       let orgId;
       if (role == 'producer') orgId = '1';
       else if (role == 'consumer') orgId = '2';
@@ -47,6 +52,7 @@ class accountService {
         mspId: 'Org' + orgId + 'MSP',
         type: 'X.509'
       }
+      // console.log(identity);
       const response = await wallet.put(identityLabel, identity);
       console.log('addToWallet mspId:Org' + orgId + `MSP response: ${response}`);
       return response ? JSON.parse(response) : response;

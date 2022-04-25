@@ -46,8 +46,8 @@ async function main() {
 
       /* 测试账户功能 */
       //初始化
-      // console.log('Submit electric initAccount request.');
-      // await contract.submitTransaction('initAccount', 'QingWeiJie', 'producer');
+      console.log('Submit electric initAccount request.');
+      await contract.submitTransaction('initAccount', 'QingWeiJie', 'producer');
       // console.log('Submit electric initAccount request.');
       // await contract.submitTransaction('initAccount', 'ZhangZhiLong', 'producer');
       // console.log('Submit electric initAccount request.');
@@ -81,8 +81,8 @@ async function main() {
       // await contract.submitTransaction('makePreTrade', 'wizard', 'producer', 17.8, 120);
       // console.log('Submit electric makePreTrade purchase request.');
       // await contract.submitTransaction('makePreTrade', 'queen', 'consumer', 8.5, 370);
-      console.log('Submit electric makeTrade request.');
-      await contract.submitTransaction('makeTrade', 'wizard', 'queen', 'producer');
+      // console.log('Submit electric makeTrade request.');
+      // await contract.submitTransaction('makeTrade', 'wizard', 'queen', 'producer');
       // console.log('Submit electric makeTrade request.');
       // await contract.submitTransaction('makeTrade', 'ZhangZhiLong', 'XiaoYan', 'consumer');
 
