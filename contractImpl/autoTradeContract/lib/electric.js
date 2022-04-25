@@ -9,7 +9,7 @@ const {
  * Define PharmaLedger smart contract by extending Fabric Contract class
  *
  */
-class PharmaLedgerContract extends Contract {
+class ElectricContract extends Contract {
 
     constructor() {
         // Unique namespace pcn - PharmaChainNetwork when multiple contracts per chaincode file
@@ -250,76 +250,5 @@ class PharmaLedgerContract extends Contract {
         return JSON.stringify(result);
     }
 
-
-    //origin
-    async makeEquipment(ctx, manufacturer, equipmentNumber, equipmentName, ownerName) {
-        console.info('============= START : makeEquipment call ===========');
-        let dt = new Date().toString();
-        const equipment = {
-            equipmentNumber,
-            manufacturer,
-            equipmentName,
-            ownerName,
-            previousOwnerType: 'MANUFACTURER',
-            currentOwnerType: 'MANUFACTURER',
-            createDateTime: dt,
-            lastUpdated: dt
-        };
-        await ctx.stub.putState(equipmentNumber, Buffer.from(JSON.stringify(equipment)));
-        console.info('============= END : Create equipment ===========');
-    }
-
-    async wholesalerDistribute(ctx, equipmentNumber, ownerName) {
-        console.info('============= START : wolesalerDistribute call ===========');
-        const equipmentAsBytes = await ctx.stub.getState(equipmentNumber);
-        if (!equipmentAsBytes || equipmentAsBytes.length === 0) {
-            throw new Error(`${equipmentNumber} does not exist`);
-        }
-        let dt = new Date().toString();
-        const strValue = Buffer.from(equipmentAsBytes).toString('utf8');
-        let record;
-        try {
-            record = JSON.parse(strValue);
-            if (record.currentOwnerType !== 'MANUFACTURER') {
-                throw new Error(` equipment - ${equipmentNumber} owner must be MANUFACTURER`);
-            }
-            record.previousOwnerType = record.currentOwnerType;
-            record.currentOwnerType = 'WHOLESALER';
-            record.ownerName = ownerName;
-            record.lastUpdated = dt;
-        } catch (err) {
-            console.log(err);
-            throw new Error(`equipmet ${equipmentNumber} data can't be processed`);
-        }
-        await ctx.stub.putState(equipmentNumber, Buffer.from(JSON.stringify(record)));
-        console.info('============= END : wolesalerDistribute  ===========');
-    }
-
-    async pharmacyReceived(ctx, equipmentNumber, ownerName) {
-        console.info('============= START : pharmacyReceived call ===========');
-        const equipmentAsBytes = await ctx.stub.getState(equipmentNumber);
-        if (!equipmentAsBytes || equipmentAsBytes.length === 0) {
-            throw new Error(`${equipmentNumber} does not exist`);
-        }
-        let dt = new Date().toString();
-        const strValue = Buffer.from(equipmentAsBytes).toString('utf8');
-        let record;
-        try {
-            record = JSON.parse(strValue);
-            //make sure owner is wholesaler
-            if (record.currentOwnerType !== 'WHOLESALER') {
-                throw new Error(` equipment - ${equipmentNumber} owner must be WHOLESALER`);
-            }
-            record.previousOwnerType = record.currentOwnerType;
-            record.currentOwnerType = 'PHARMACY';
-            record.ownerName = ownerName;
-            record.lastUpdated = dt;
-        } catch (err) {
-            console.log(err);
-            throw new Error(`equipmet ${equipmentNumber} data can't be processed`);
-        }
-        await ctx.stub.putState(equipmentNumber, Buffer.from(JSON.stringify(record)));
-        console.info('============= END : pharmacyReceived  ===========');
-    }
 }
-module.exports = PharmaLedgerContract;
+module.exports = ElectricContract;

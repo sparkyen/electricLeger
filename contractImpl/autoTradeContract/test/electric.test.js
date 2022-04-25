@@ -22,21 +22,28 @@ describe('Electric Trade Tests', () => {
 
     const originalLogFunction = console.log;
     let output;
-    // before(() => {
-    //     output = '';
-    //     console.log = (msg) => {
-    //         output += msg + '\n';
-    //     };
-    // })
 
+    before(() =>{
+        
+    })
+
+    after(() => {
+        
+    });
+
+    afterEach(function() {
+        console.log = originalLogFunction; // undo dummy log function
+        if (this.currentTest.state === 'failed') {
+          console.log(output);
+        }
+      });
 
     let transactionContext, chaincodeStub, asset;
     beforeEach(() => {
-        // output = '';
-        // console.log = (msg) => {
-        //     output += msg + '\n';
-        // };
-
+        output = '';
+        console.log = (msg) => {
+            output += msg + '\n';
+        };
 
         transactionContext = new Context();
 
@@ -119,61 +126,55 @@ describe('Electric Trade Tests', () => {
         });
     });
 
-    afterEach(function() {
-        console.log = originalLogFunction; // undo dummy log function
-        if (this.currentTest.state === 'failed') {
-          console.log(output);
-        }
-      });
 
-    // describe('Account Service', () => {
-    //     describe('Test initAccount', () => {
-    //         it('should return success on initAccount', async () => {
-    //             let electricTrade = new ElectricTrade();
-    //             await electricTrade.initAccount(transactionContext, 'wizard', 'producer');
-    //             let ret = JSON.parse((await chaincodeStub.getState('account-wizard')).toString());
-    //             expect(ret).to.include({
-    //                 name: 'wizard',
-    //                 role: 'producer',
-    //                 amount: 3400,
-    //                 balance: 52000,
-    //                 permission: 0,
-    //               });
-    //         });
-    //         // it('should return error on initAccount', async () => {
+    describe('Basic Account Service', () => {
+        describe('Test initAccount', () => {
+            it('should return success on initAccount', async () => {
+                let electricTrade = new ElectricTrade();
+                await electricTrade.initAccount(transactionContext, 'wizard', 'producer');
+                let ret = JSON.parse((await chaincodeStub.getState('account-wizard')).toString());
+                expect(ret).to.include({
+                    name: 'wizard',
+                    role: 'producer',
+                    amount: 3400,
+                    balance: 52000,
+                    permission: 0,
+                  });
+            });
+            // it('should return error on initAccount', async () => {
                 
-    //         // });
-    //     });
+            // });
+        });
 
-        // describe('Test activeAccount', () => {
-        //     it('should return success on activeAccount', async () => {
-        //         let electricTrade = new ElectricTrade();
-        //         await electricTrade.initAccount(transactionContext, 'wizard', 'producer');
-        //         await electricTrade.activeAccount(transactionContext, 'wizard');
-        //         let ret = JSON.parse((await chaincodeStub.getState('account-wizard')).toString());
-        //         expect(ret.permission).to.eql(1);
-        //     });
-        //     // it('should return error on ', async () => {
+        describe('Test activeAccount', () => {
+            it('should return success on activeAccount', async () => {
+                let electricTrade = new ElectricTrade();
+                await electricTrade.initAccount(transactionContext, 'wizard', 'producer');
+                await electricTrade.activeAccount(transactionContext, 'wizard');
+                let ret = JSON.parse((await chaincodeStub.getState('account-wizard')).toString());
+                expect(ret.permission).to.eql(1);
+            });
+            // it('should return error on ', async () => {
                 
-        //     // });
-        // });
+            // });
+        });
 
-        // describe('Test rechargeAccount', () => {
-        //     it('should return success on rechargeAccount', async () => {
-        //         let electricTrade = new ElectricTrade();
-        //         await electricTrade.initAccount(transactionContext, 'wizard', 'producer');
-        //         await electricTrade.rechargeAccount(transactionContext, 'wizard', 2615);
-        //         let ret = JSON.parse((await chaincodeStub.getState('account-wizard')).toString());
-        //         expect(ret.balance).to.eql(54615);
-        //     });
-        //     // it('should return error on ', async () => {
+        describe('Test rechargeAccount', () => {
+            it('should return success on rechargeAccount', async () => {
+                let electricTrade = new ElectricTrade();
+                await electricTrade.initAccount(transactionContext, 'wizard', 'producer');
+                await electricTrade.rechargeAccount(transactionContext, 'wizard', 2615);
+                let ret = JSON.parse((await chaincodeStub.getState('account-wizard')).toString());
+                expect(ret.balance).to.eql(54615);
+            });
+            // it('should return error on ', async () => {
                 
-        //     // });
-        // });
+            // });
+        });
 
-    // });
+    });
 
-    describe('Trade Service', () => {
+    describe('Basic Trade Service', () => {
         describe('Test makePreTrade', () => {
             it('should return success on makePreTrade', async () => {
                 let electricTrade = new ElectricTrade();
@@ -215,7 +216,7 @@ describe('Electric Trade Tests', () => {
         });
     });
 
-    describe('Query Service', () => {
+    describe('Basic Query Service', () => {
         describe('Test queryByKey', () => {
             it('should return success on ', async () => {
                 let electricTrade = new ElectricTrade();
@@ -270,5 +271,14 @@ describe('Electric Trade Tests', () => {
             // });
         });
     });
+
+    describe('Trade Strategy Service', () => {
+        describe('Test Strategy', () => {
+            
+            it('should return success on ', async () => {
+                
+            });
+        })
+    })
 
 });

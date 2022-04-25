@@ -1,21 +1,3 @@
-/*
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- * http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
-/**
- * farma ledger supply chain network smart contract
- * O'Reilly - Accelerated Hands-on Smart Contract Development with Hyperledger Fabric V2
- * Author: Brian Wu
- */
 'use strict';
 // Fabric smart contract classes
 const {
@@ -51,7 +33,7 @@ class PharmaLedgerContract extends Contract {
         accountDetail.role = role;
         accountDetail.amount = 3400;
         accountDetail.balance = 52000;
-        if (role == 'supervisor') accountDetail.permission = 1;
+        if (role == 'admin') accountDetail.permission = 1;
         else accountDetail.permission = 0;
         accountDetail.updateTime = dt;
 
@@ -102,15 +84,17 @@ class PharmaLedgerContract extends Contract {
         console.info('============= END : rechargeAccount Done ===========');
     }
 
-    async makePreTrade(ctx, name, cate, price, amount) {
+    //bottomPrice==-1代表手动交易
+    async makePreTrade(ctx, name, cate, expectPrice, bottomPrice, amount) {
         console.info('============= START : makePreTrade call ===========');
         let dt = new Date().toString();
         let equipment = {}, orderID;
-        equipment.price = parseFloat(price);
+        equipment.expectPrice = parseFloat(expectPrice);
+        equipment.bottomPrice = parseFloat(bottomPrice);
         equipment.amount = parseFloat(amount);
         equipment.available = 1;
         equipment.createDateTime = dt;
-        if (cate == "producer") equipment.seller = name, orderID = "sell-" + name;
+        if (cate == "sell") equipment.seller = name, orderID = "sell-" + name;
         else equipment.buyer = name, orderID = "purchase-" + name;
 
         console.log(orderID + " is using");
@@ -119,31 +103,42 @@ class PharmaLedgerContract extends Contract {
         console.info('============= END : Create preTrade ===========');
     }
 
-    async makeTrade(ctx, seller, buyer, role) {
+    async makeTrade(ctx, seller, buyer) {
+
+        // function getRecord
         console.info('============= START : makeTrade call ===========');
         //1. 交易确认
         let dt = new Date().toString();
         let order = {};
         order.seller = seller;
         order.buyer = buyer;
-        order.createDateTime = dt;
         //1.1 获取交易细节
-        var recordID;
-        if (role == "producer") recordID = "purchase-" + buyer;
-        else recordID = "sell-" + seller;
-        const equipmentAsBytes = await ctx.stub.getState(recordID);
-        if (!equipmentAsBytes || equipmentAsBytes.length === 0) {
-            throw new Error(`${recordID} does not exist`);
+        var purchaseRecordID = "purchase-" + buyer;
+        var sellRecordID = "sell-" + seller;
+        const sellEquipmentAsBytes = await ctx.stub.getState(sellRecordID);
+        if (!sellEquipmentAsBytes || sellEquipmentAsBytes.length === 0) {
+            throw new Error(`${sellRecordID} does not exist`);
         }
-        const strValue = Buffer.from(equipmentAsBytes).toString('utf8');
-        let record;
+        const purchaseEquipmentAsBytes = await ctx.stub.getState(purchaseRecordID);
+        if (!purchaseEquipmentAsBytes || purchaseEquipmentAsBytes.length === 0) {
+            throw new Error(`${purchaseRecordID} does not exist`);
+        }
+        const sellStrValue = Buffer.from(sellEquipmentAsBytes).toString('utf8');
+        const purchaseStrValue = Buffer.from(purchaseEquipmentAsBytes).toString('utf8');
+        
+        
+        let sellRecord, purchaseRecord;
         try {
-            record = JSON.parse(strValue);
-            order.price = record.price;
-            order.amount = record.amount;
+            sellRecord = JSON.parse(sellStrValue);
+            purchaseRecord = JSON.parse(purchaseStrValue);
+            order.price = (parseFloat(sellRecord.expectPrice)+parseFloat(purchaseRecord.expectPrice))/2
+            order.amount = Math.min(sellRecord.amount, purchaseRecord.amount)
+            sellRecord.amount = parseFloat(sellRecord.amount)-parseFloat(order.amount);
+            purchaseRecord.amount = parseFloat(purchaseRecord.amount)-parseFloat(order.amount);
+            order.createDateTime = dt;
         } catch (err) {
             console.log(err);
-            throw new Error(`equipmet ${recordID} data can't be processed`);
+            throw new Error(`equipmet ${sellRecordID} and ${purchaseRecordID} data can't be processed`);
         }
         //1.2 确认账号信息
         const buyerAsBytes = await ctx.stub.getState("account-" + buyer);
@@ -158,53 +153,42 @@ class PharmaLedgerContract extends Contract {
             buyerRecord = JSON.parse(strValue1);
         const strValue2 = Buffer.from(sellerAsBytes).toString('utf8'),
             sellerRecord = JSON.parse(strValue2);
-        let totPrice = parseFloat(record.price) * parseFloat(record.amount);
+        let totPrice = parseFloat(order.price) * parseFloat(order.amount);
         // let isTrade = 1;
         //buyer action
         buyerRecord.balance = parseFloat(buyerRecord.balance) - totPrice;
-        buyerRecord.amount = parseFloat(buyerRecord.amount) + parseFloat(record.amount);
+        buyerRecord.amount = parseFloat(buyerRecord.amount) + parseFloat(order.amount);
         buyerRecord.updateTime = dt;
         //seller action
         sellerRecord.balance = parseFloat(sellerRecord.balance) + totPrice;
-        sellerRecord.amount = parseFloat(sellerRecord.amount) - parseFloat(record.amount);
+        sellerRecord.amount = parseFloat(sellerRecord.amount) - parseFloat(order.amount);
         sellerRecord.updateTime = dt;
-        let msg = "";
-        if(buyerRecord.permission == 0 ) msg += " buyer do not have trade permission &";
-        if(sellerRecord.permission == 0) msg += " seller do not have trade permission &";
-        if(buyerRecord.balance < 0) msg += " buyer do not have enough money &";
-        if(sellerRecord.amount < 0 ) msg += " seller do not have enough electric amount &";
-        if(record.available == 0) msg += " this trade order is unavailable &";
-        
 
-        if (msg!="") {
-            console.info('============= END : Trade failed > ACCOUNT ERROR ===========');
-            throw new Error(msg);
-        } else {
-            try {
-                //2.1 删除发布信息
-                record.available = 0;
-                console.log(record);
-                await ctx.stub.putState(recordID, Buffer.from(JSON.stringify(record)));
+        try {
+            //2.1 更改发布信息
+            if(sellRecord.amount==0) sellRecord = null;
+            if(purchaseRecord.amount==0) purchaseRecord = null;
+            console.log(sellRecord);
+            console.log(purchaseRecord);
+            await ctx.stub.putState(sellRecordID, Buffer.from(JSON.stringify(sellRecord)));
+            await ctx.stub.putState(purchaseRecordID, Buffer.from(JSON.stringify(purchaseRecord)));
 
-                //2.2 双方进行交易
-                console.info('----------------------------------------------');
-                console.log(order);
-                await ctx.stub.putState("trade-" + seller, Buffer.from(JSON.stringify(order)));
-                await ctx.stub.putState("trade-" + buyer, Buffer.from(JSON.stringify(order)));
-                //2.3 更新账号信息
-                console.info('----------------------------------------------');
-                console.log(buyerRecord);
-                console.log(sellerRecord);
-                await ctx.stub.putState("account-" + buyer, Buffer.from(JSON.stringify(buyerRecord)))
-                await ctx.stub.putState("account-" + seller, Buffer.from(JSON.stringify(sellerRecord)))
-                console.info('============= END : Create trade ===========');
-            } catch (err) {
-                console.log(err);
-                console.info('============= END : Trade failed > SELL/PURCAHSE ORDER HAS DONE ===========');
-            }
+            //2.2 双方进行交易
+            console.info('----------------------------------------------');
+            console.log(order);
+            await ctx.stub.putState("trade-" + seller, Buffer.from(JSON.stringify(order)));
+            await ctx.stub.putState("trade-" + buyer, Buffer.from(JSON.stringify(order)));
 
+            //2.3 更新账号信息
+            console.info('----------------------------------------------');
+            console.log(buyerRecord);
+            console.log(sellerRecord);
+            await ctx.stub.putState("account-" + buyer, Buffer.from(JSON.stringify(buyerRecord)))
+            await ctx.stub.putState("account-" + seller, Buffer.from(JSON.stringify(sellerRecord)))
+            console.info('============= END : Create trade ===========');
+        } catch (err) {
+            console.log(err);
         }
-
 
     }
 
@@ -223,10 +207,11 @@ class PharmaLedgerContract extends Contract {
             record = strValue;
         }
         console.info('============= Get record with compelteKey done ============= ');
-        return JSON.stringify({
-            Key: key,
-            Record: record
-        });
+        return JSON.stringify(record);
+        // return JSON.stringify({
+        //     Key: key,
+        //     Record: record
+        // });
     }
 
     async queryHistoryByKey(ctx, key) {
@@ -241,7 +226,7 @@ class PharmaLedgerContract extends Contract {
             }
             res = await iterator.next();
         }
-        await iterator.close();
+        // await iterator.close();
         console.info(result);
         console.info('============= Get history records done ============= ');
         return JSON.stringify(result);
@@ -259,12 +244,11 @@ class PharmaLedgerContract extends Contract {
             }
             res = await iterator.next();
         }
-        await iterator.close();
+        // await iterator.close();
         console.info(result);
         console.info('============= Get records with partialKey done');
         return JSON.stringify(result);
     }
-
 
     //origin
     async makeEquipment(ctx, manufacturer, equipmentNumber, equipmentName, ownerName) {
