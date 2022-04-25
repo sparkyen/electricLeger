@@ -68,8 +68,11 @@ app.use('/consumer', consumer);
     // res.render('consumer.ejs');
   }
  })
+
+
+var hostname = "127.0.0.1";
 var port = process.env.PORT || 8080;
-var server = app.listen(port, "127.0.0.1", function () {
+var server = app.listen(port, function () {
    var host = server.address().address
    var port = server.address().port
    console.log("App listening at http://%s:%s", host, port)

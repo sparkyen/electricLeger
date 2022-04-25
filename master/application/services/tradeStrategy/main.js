@@ -13,8 +13,8 @@ function dataGenerater(role, num, minPrice, maxPrice, minAmount, maxAmount) {
         let dataDetail = {};
         dataDetail.id = id, id += 1;
         dataDetail.expectPrice = randomFloat(minPrice, maxPrice);
-        if (role == 'seller') dataDetail.lowestPrice = randomFloat(minPrice, dataDetail.expectPrice);
-        else dataDetail.highestPrice = randomFloat(dataDetail.expectPrice, maxPrice);
+        if (role == 'seller') dataDetail.bottomPrice = randomFloat(minPrice, dataDetail.expectPrice);
+        else dataDetail.bottomPrice = randomFloat(dataDetail.expectPrice, maxPrice);
         dataDetail.amount = randomNum(minAmount, maxAmount);
         data.push(dataDetail);
     }
@@ -69,12 +69,12 @@ function trade(sellBids, buyBids) {
         for (let i = 0; i < sellRest.length; i++) {
             if (sellRest[i].expectPrice <= bestPrice) continue;
             let nowExpectPrice = sellRest[i].expectPrice - k * (sellRest[i].expectPrice - bestPrice);
-            sellRest[i].expectPrice = Math.max(sellRest[i].lowestPrice, parseFloat(nowExpectPrice.toFixed(2)));
+            sellRest[i].expectPrice = Math.max(sellRest[i].bottomPrice, parseFloat(nowExpectPrice.toFixed(2)));
         }
         for (let i = 0; i < buyRest.length; i++) {
             if (buyRest[i].expectPrice >= bestPrice) continue;
             let nowExpectPrice = buyRest[i].expectPrice - k * (buyRest[i].expectPrice - bestPrice);
-            buyRest[i].expectPrice = Math.min(buyRest[i].highestPrice, parseFloat(nowExpectPrice.toFixed(2)));
+            buyRest[i].expectPrice = Math.min(buyRest[i].bottomPrice, parseFloat(nowExpectPrice.toFixed(2)));
         }
         sellBids = sellRest.sort(function (a, b) {
             return a.expectPrice - b.expectPrice;

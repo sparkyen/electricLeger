@@ -1,0 +1,11 @@
+pln/channel-artifacts
+pln/organizations/ordererOrganizations
+pln/organizations/peerOrganizations
+pln/system-genesis-block/genesis.block
+pln/pharmaLedgerContract.tar.gz
+pln/log.txt
+
+master/identity
+
+tmp.js
+samples

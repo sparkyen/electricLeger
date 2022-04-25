@@ -302,7 +302,7 @@ CRYPTO="cryptogen"
 # another container before giving up
 MAX_RETRY=5
 # default for delay between commands
-CLI_DELAY=3
+CLI_DELAY=5
 # channel name defaults to "plnchannel"
 CHANNEL_NAME="plnchannel"
 # use this as the default docker-compose yaml definition
