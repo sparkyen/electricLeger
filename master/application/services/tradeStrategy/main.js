@@ -25,8 +25,9 @@ function dataGenerater(role, num, minPrice, maxPrice, minAmount, maxAmount) {
 function trade(sellBids, buyBids) {
     let tradeRecord = [], nowSellRestNum, nowBuyRestNum;
     var bestPrice = 0, roundNum = 1;
+    let k = 0.91, maxtry = 0;
     while (sellBids.length != 0 && buyBids.length != 0) {
-        let m = sellBids.length, n = buyBids.length, k = 0.91;
+        let m = sellBids.length, n = buyBids.length
         let sid = 0, bid = 0;
         let sellRest = [], buyRest = [];
         
@@ -83,10 +84,12 @@ function trade(sellBids, buyBids) {
                     tmpMin = Math.min(tmpMin, buyBids[i].expectPrice);
                 }
                 buySum = buySum - tmpMax - tmpMin;
-                bestPrice = (sellSum/(sellBids.length-2)+buySum/(buyBids.length-2))/2;
+                bestPrice = parseFloat(((sellSum/(sellBids.length-2)+buySum/(buyBids.length-2))/2).toFixed(2));
             }
-            //直接将下一轮调整为最大干预交易
-            else if(k!=1) k = 1;
+            //三次调整参数
+            else if(maxtry==0) k = 1, maxtry += 1;
+            else if(maxtry==1) k = 1.5, maxtry += 1;
+            else if(maxtry==2) k = 2, maxtry += 1;
             else done = 1;
 
         }
@@ -130,10 +133,10 @@ function trade(sellBids, buyBids) {
 
 function generate() {
     var data = [];
-    var sellerData = dataGenerater('seller', 4, 4.5, 9.8, 120, 240).sort(function (a, b) {
+    var sellerData = dataGenerater('seller', 123, 4.5, 9.8, 120, 240).sort(function (a, b) {
         return a.expectPrice - b.expectPrice;
     });
-    var buyerData = dataGenerater('buyer', 1, 2.3, 7.8, 50, 130).sort(function (a, b) {
+    var buyerData = dataGenerater('buyer', 98, 2.3, 7.8, 50, 130).sort(function (a, b) {
         return b.expectPrice - a.expectPrice;
     });
     data.push(sellerData), data.push(buyerData);

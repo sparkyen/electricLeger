@@ -19,23 +19,25 @@
   <!-- Latest compiled JavaScript -->
   <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js"></script>
   <link type="text/css" href="/css/main_style.css" rel="stylesheet">
-  <script src="/js/consumerClient.js"></script>
+  <script src="/js/admin.js"></script>
 </head>
 
 <body>
   <nav class="navbar navbar-light navbar-light" style="background-color: #343a40;margin-top: -3px;">
-    <span class="navbar-brand text-white"><%= name %> Pannel</span>
-    <p hidden id='username'><%= name %></p>
+    <span class="navbar-brand text-white">Admin Pannel</span>
   </nav>
   <nav class="navbar navbar-default" role="navigation">
     <div class="container">
       <div id="sidebar-wrapper" class="sidebar-toggle">
         <ul class="sidebar-nav">
-          <li id="tradeLink" class="nav-menu">
-            <a id="menu1" href="#trade"><i class="fa fa-university menuIcon"></i>交易市场</a>
+          <li id="accountTestLink" class="nav-menu">
+            <a id="menu1" href="#accountTest"><i class="fa fa-user menuIcon"></i>AccountTest</a>
+          </li>
+          <li id="tradeTestLink" class="nav-menu">
+            <a id="menu2" href="#tradeTest"><i class="fa fa-university menuIcon"></i>TradeTest</a>
           </li>
           <li id="queryLink" class="nav-menu">
-            <a id="menu2" href="#query"><i class="fa fa fa-history menuIcon"></i>信息查询</a>
+            <a id="menu3" href="#query"><i class="fa fa fa-history menuIcon"></i>QueryTest</a>
           </li>
         </ul>
       </div>
@@ -44,33 +46,73 @@
   <!-- tab content -->
   <div class="tab-content page-content">
     <!-- accountTest --->
-    <!-- tradeTest --->
-    <div class="tab-pane text-style" id="tradeTab">
+    <div class="tab-pane active text-style" id="accountTestTab">
       <div class="alert alert-primary" role="alert">
-        <h4>交易市场</h4>
+        <h4>Test Account</h4>
       </div>
       <form>
         <div class="form-group row">
-          <label for="price" class="col-sm-2 col-form-label">期望交易价格</label>
+          <label for="username" class="col-sm-2 col-form-label">Role</label>
           <div class="col-sm-10">
-            <input type="text" class="form-control" id="trade-expectPrice" value="7.9">
+            <input type="text" class="form-control" id="account-role" value="producer">
           </div>
         </div>
         <div class="form-group row">
-          <label for="price" class="col-sm-2 col-form-label">交易底价</label>
+          <label for="username" class="col-sm-2 col-form-label">Username</label>
           <div class="col-sm-10">
-            <input type="text" class="form-control" id="trade-bottomPrice" value="10.2">
+            <input type="text" class="form-control" id="account-username" value="wizard">
           </div>
         </div>
         <div class="form-group row">
-          <label for="amount" class="col-sm-2 col-form-label">交易数量</label>
+          <label for="money" class="col-sm-2 col-form-label">Money</label>
+          <div class="col-sm-10">
+            <input type="text" class="form-control" id="account-money" value="1570">
+          </div>
+        </div>
+        <button id="active" type="submit" class="btn btn-success">Active</button>
+        <button id="init" type="submit" class="btn btn-success">Init</button>
+        <button id="recharge" type="submit" class="btn btn-success">Recharge</button>
+      </form>
+      <hr>
+    </div>
+    <!-- tradeTest --->
+    <div class="tab-pane text-style" id="tradeTestTab">
+      <div class="alert alert-primary" role="alert">
+        <h4>Test Trade</h4>
+      </div>
+      <form>
+        <div class="form-group row">
+          <label for="seller" class="col-sm-2 col-form-label">Seller</label>
+          <div class="col-sm-10">
+            <input type="text" class="form-control" id="trade-seller" value="wizard">
+          </div>
+        </div>
+        <div class="form-group row">
+          <label for="buyer" class="col-sm-2 col-form-label">Buyer</label>
+          <div class="col-sm-10">
+            <input type="text" class="form-control" id="trade-buyer" value="queen">
+          </div>
+        </div>
+        <div class="form-group row">
+          <label for="role" class="col-sm-2 col-form-label">Role</label>
+          <div class="col-sm-10">
+            <input type="text" class="form-control" id="trade-role" value="producer">
+          </div>
+        </div>
+        <div class="form-group row">
+          <label for="price" class="col-sm-2 col-form-label">Price</label>
+          <div class="col-sm-10">
+            <input type="text" class="form-control" id="trade-price" value="17.5">
+          </div>
+        </div>
+        <div class="form-group row">
+          <label for="amount" class="col-sm-2 col-form-label">Amount</label>
           <div class="col-sm-10">
             <input type="text" class="form-control" id="trade-amount" value="240">
           </div>
         </div>
-        <button type="submit" id="makeSellPretrade" class="btn btn-success mb-2">提交卖电需求订单</button>
-        <button type="submit" id="makePurchasePretrade" class="btn btn-success mb-2">提交买电需求订单</button>
-        
+        <button type="submit" id="makePretrade" class="btn btn-success mb-2">Make Pretrade</button>
+        <button type="submit" id="makeTrade" class="btn btn-success mb-2">Make Trade</button>
       </form>
       <hr>
     </div>
@@ -78,19 +120,37 @@
     <!-- query --->
     <div class="tab-pane text-style" id="queryTab">
       <div class="alert alert-primary" role="alert">
-        <h4>信息查询</h4>
+        <h4>Test Query</h4>
       </div>
-        <button id="account-query" type="submit" class="btn btn-success">账户信息</button>
-        <button id="sell-query" type="submit" class="btn btn-success">卖电需求订单</button>
-        <button id="purchase-query" type="submit" class="btn btn-success" >买电需求订单</button>
-        <button id="trade-query" type="submit" class="btn btn-success" >交易信息</button>
+      <form>
+        <div class="form-group row">
+          <label for="role" class="col-sm-2 col-form-label">Role</label>
+          <div class="col-sm-10">
+            <input type="text" class="form-control" id="query-role" value="producer">
+          </div>
+        </div>
+        <div class="form-group row">
+          <label for="username" class="col-sm-2 col-form-label">Username</label>
+          <div class="col-sm-10">
+            <input type="text" class="form-control" id="query-username" value="wizard">
+          </div>
+        </div>
+        <div class="form-group row">
+          <label for="cate" class="col-sm-2 col-form-label">Cate</label>
+          <div class="col-sm-10">
+            <input type="text" class="form-control" id="query-cate" value="account">
+          </div>
+        </div>
+        <button id="single-query" type="submit" class="btn btn-success">Single Query</button>
+        <button id="history-query" type="submit" class="btn btn-success">History Query</button>
+        <button id="partial-query" type="submit" class="btn btn-success">Partial Query</button>
+      </form>
       <hr>
 
 
       <div id="queryResult">
-        
         <div id="accountResult">
-          <h4 class="display-5 text-center">查询结果</h4>
+          <h4 class="display-5 text-center">Query Result</h4>
           <table id="accountTable" class="table table-striped table-sm">
             <thead>
               <tr>
@@ -108,13 +168,12 @@
         </div>
 
         <div id="sellResult">
-          <h4 class="display-5 text-center">查询结果</h4>
+          <h4 class="display-5 text-center">Query Result</h4>
           <table id="sellTable" class="table table-striped table-sm">
             <thead>
               <tr>
                 <th scope="col">Seller</th>
-                <th scope="col">expectPrice</th>
-                <th scope="col">bottomPrice</th>
+                <th scope="col">Price</th>
                 <th scope="col">Amount</th>
                 <th scope="col">Available</th>
                 <th scope="col">Create Date</th>
@@ -126,13 +185,12 @@
         </div>
 
         <div id="purchaseResult">
-          <h4 class="display-5 text-center">查询结果</h4>
+          <h4 class="display-5 text-center">Query Result</h4>
           <table id="purchaseTable" class="table table-striped table-sm">
             <thead>
               <tr>
                 <th scope="col">Buyer</th>
-                <th scope="col">expectPrice</th>
-                <th scope="col">bottomPrice</th>
+                <th scope="col">Price</th>
                 <th scope="col">Amount</th>
                 <th scope="col">Available</th>
                 <th scope="col">Create Date</th>
@@ -144,7 +202,7 @@
         </div>
 
         <div id="tradeResult">
-          <h4 class="display-5 text-center">查询结果</h4>
+          <h4 class="display-5 text-center">Query Result</h4>
           <table id="tradeTable" class="table table-striped table-sm">
             <thead>
               <tr>

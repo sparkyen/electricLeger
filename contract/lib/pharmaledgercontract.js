@@ -75,7 +75,7 @@ class PharmaLedgerContract extends Contract {
         }
         const strValue = Buffer.from(accountAsBytes).toString('utf8');
         const record = JSON.parse(strValue);
-        record.balance = parseFloat(record.balance) + parseFloat(money);
+        record.balance = parseFloat((parseFloat(record.balance) + parseFloat(money)).toFixed(2));
         record.updateTime = dt;
 
         console.log(accountID + " is using");
@@ -224,7 +224,8 @@ class PharmaLedgerContract extends Contract {
         while (!res.done) {
             if (res.value) {
                 const obj = JSON.parse(res.value.value.toString('utf8'));
-                result.push(obj);
+                //空对象则不加入
+                if(obj!=null) result.push(obj);
             }
             res = await iterator.next();
         }
@@ -242,7 +243,8 @@ class PharmaLedgerContract extends Contract {
         while (!res.done) {
             if (res.value) {
                 const obj = JSON.parse(res.value.value.toString('utf8'));
-                result.push(obj);
+                //空对象则不加入
+                if(obj!=null) result.push(obj);
             }
             res = await iterator.next();
         }
@@ -250,77 +252,6 @@ class PharmaLedgerContract extends Contract {
         console.info(result);
         console.info('============= Get records with partialKey done');
         return JSON.stringify(result);
-    }
-
-    //origin
-    async makeEquipment(ctx, manufacturer, equipmentNumber, equipmentName, ownerName) {
-        console.info('============= START : makeEquipment call ===========');
-        let dt = new Date().toString();
-        const equipment = {
-            equipmentNumber,
-            manufacturer,
-            equipmentName,
-            ownerName,
-            previousOwnerType: 'MANUFACTURER',
-            currentOwnerType: 'MANUFACTURER',
-            createDateTime: dt,
-            lastUpdated: dt
-        };
-        await ctx.stub.putState(equipmentNumber, Buffer.from(JSON.stringify(equipment)));
-        console.info('============= END : Create equipment ===========');
-    }
-
-    async wholesalerDistribute(ctx, equipmentNumber, ownerName) {
-        console.info('============= START : wolesalerDistribute call ===========');
-        const equipmentAsBytes = await ctx.stub.getState(equipmentNumber);
-        if (!equipmentAsBytes || equipmentAsBytes.length === 0) {
-            throw new Error(`${equipmentNumber} does not exist`);
-        }
-        let dt = new Date().toString();
-        const strValue = Buffer.from(equipmentAsBytes).toString('utf8');
-        let record;
-        try {
-            record = JSON.parse(strValue);
-            if (record.currentOwnerType !== 'MANUFACTURER') {
-                throw new Error(` equipment - ${equipmentNumber} owner must be MANUFACTURER`);
-            }
-            record.previousOwnerType = record.currentOwnerType;
-            record.currentOwnerType = 'WHOLESALER';
-            record.ownerName = ownerName;
-            record.lastUpdated = dt;
-        } catch (err) {
-            console.log(err);
-            throw new Error(`equipmet ${equipmentNumber} data can't be processed`);
-        }
-        await ctx.stub.putState(equipmentNumber, Buffer.from(JSON.stringify(record)));
-        console.info('============= END : wolesalerDistribute  ===========');
-    }
-
-    async pharmacyReceived(ctx, equipmentNumber, ownerName) {
-        console.info('============= START : pharmacyReceived call ===========');
-        const equipmentAsBytes = await ctx.stub.getState(equipmentNumber);
-        if (!equipmentAsBytes || equipmentAsBytes.length === 0) {
-            throw new Error(`${equipmentNumber} does not exist`);
-        }
-        let dt = new Date().toString();
-        const strValue = Buffer.from(equipmentAsBytes).toString('utf8');
-        let record;
-        try {
-            record = JSON.parse(strValue);
-            //make sure owner is wholesaler
-            if (record.currentOwnerType !== 'WHOLESALER') {
-                throw new Error(` equipment - ${equipmentNumber} owner must be WHOLESALER`);
-            }
-            record.previousOwnerType = record.currentOwnerType;
-            record.currentOwnerType = 'PHARMACY';
-            record.ownerName = ownerName;
-            record.lastUpdated = dt;
-        } catch (err) {
-            console.log(err);
-            throw new Error(`equipmet ${equipmentNumber} data can't be processed`);
-        }
-        await ctx.stub.putState(equipmentNumber, Buffer.from(JSON.stringify(record)));
-        console.info('============= END : pharmacyReceived  ===========');
     }
 }
 module.exports = PharmaLedgerContract;

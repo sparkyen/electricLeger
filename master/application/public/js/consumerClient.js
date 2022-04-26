@@ -1,174 +1,360 @@
 /**
-** O'Reilly - Accelerated Hands-on Smart Contract Development with Hyperledger Fabric V2
-** farma ledger supply chain network
-**  Author: Brian Wu
-** JS for wholesaler web appication
-**/
-$(document).ready(function(){
-     //make sure change to your own machine ip or dmain url
-     var ipUrl = "http://192.168.233.158"
-     var urlBase = ipUrl+":8080/consumer";
-    // var urlBase = "http://54.161.38.96:30001";
-     var tabs =["addToWallet", "wholesalerDistribute", "query", "queryHistory"];
-     $("#queryResult").hide();
-     $("#addToWalletLink").click(function(){
-       showTab("addToWallet");
-     });
-   $("#wholesalerDistributeLink").click(function(){
-     showTab("wholesalerDistribute");
-   });
-   $("#queryLink").click(function(){
-       showTab("query");
-   });
-   $("#queryHistoryLink").click(function(){
-       showTab("queryHistory");
-   });
- $("#addUser").click(function(){
-   var addUserUrl = urlBase+"/addUser";
-   var userName = $('#user').val();
-   $.ajax({
-     type: 'POST',
-     url: addUserUrl,
-     data: { userName: userName },
-     success: function(data, status, jqXHR){
-       console.log(data);
-       if(status==='success'){
-         alert("User - "+ userName+ " was successfully added to wallet and is ready to intreact with the fabric network");
-       }
-       showTab("wholesalerDistribute");
-     },
-     error: function(xhr, textStatus, error){
-         console.log(xhr.statusText);
-         console.log(textStatus);
-         console.log(error);
-         alert("Error: "+ xhr.responseText);
-     }
-   });
- });
- $("#wholesalerDistribute").click(function(){
-   var wholesalerDistributeUrl = urlBase+"/wholesalerDistribute";
-   var formData = {
-     equipmentNumber: $('#equipmentNumber').val(),
-     ownerName: $('#ownerName').val()
-   }
-   $.ajax({
-     type: 'POST',
-     url: wholesalerDistributeUrl,
-     data: formData,
-     success: function(data, status, jqXHR){
-       if(status==='success'){
-         alert("successfully record wholesaler Distribute  in blockchain");
-      }
-       showTab("query");
-     },
-     error: function(xhr, textStatus, error){
-         console.log(xhr.statusText);
-         console.log(textStatus);
-         console.log(error);
-         alert("Error: "+ xhr.responseText);
-     }
-   });
- });
-$("#query").click(function(){
- reset();
- var queryUrl = urlBase+"/queryByKey";
- var searchKey = $('#queryKey').val();
+ ** O'Reilly - Accelerated Hands-on Smart Contract Development with Hyperledger Fabric V2
+ ** farma ledger supply chain network
+ **  Author: Brian Wu
+ ** JS for manufacturer web appication
+ **/
+// var cache = require('memory-cache');
 
- $.ajax({
-   type: 'GET',
-   url: queryUrl,
-   data: { key: searchKey },
-   success: function(data, status, jqXHR){
-     if(!data || !data.Record || !data.Record.equipmentNumber) {
-       $("#queryResultEmpty").show();
-       $("#queryResult").hide();
-     } else {
-       $("#queryResult").show();
-       $("#queryResultEmpty").hide();
-       let record = data.Record;
-       $("#equipmentNumberOutPut").text(record.equipmentNumber);
-       $("#equipmentNameOutPut").text(record.equipmentName);
-       $("#manufacturerOutPut").text(record.manufacturer);
-       $("#ownerNameOutPut").text(record.ownerName);
-       $("#createDateTime").text(record.createDateTime);
-       $("#lastUpdated").text(record.lastUpdated);
-       $("#queryKeyRequest").text(data.Key);
-       $("#previousOwnerType").text(record.previousOwnerType);
-       $("#currentOwnerType").text(record.currentOwnerType);
-     }
-   },
-   error: function(xhr, textStatus, error){
-       console.log(xhr.statusText);
-       console.log(textStatus);
-       console.log(error);
-       alert("Error: "+ xhr.responseText);
-   }
- });
-});
-$("#queryHistory").click(function(){
-  reset();
-  var queryUrl = urlBase+"/queryHistoryByKey";
-  var searchKey = $('#queryHistoryKey').val();
-
-  $.ajax({
-    type: 'GET',
-    url: queryUrl,
-    data: { key: searchKey },
-    success: function(data, status, jqXHR){
-      if(!data || data.length==0) {
-        $("#qqueryHistoryResultEmpty").show();
-        $("#queryHistoryResult").hide();
-      } else {
-        $("#queryHistoryResult").show();
-        $("#queryHistoryResultEmpty").hide();
-        console.log(data);
-        $("#historyTableTboday").empty();
-        var tbody = $("#historyTableTboday");
-        for (var i = 0; i < data.length; i++) {
-            var row = data[i];
-            var tr = '<tr>';
-            tr = tr+'<th scope="col">'+ row.equipmentNumber + '</th>';
-            tr = tr+ '<td>'+ row.manufacturer + '</td>';
-            tr = tr+ '<td>'+ row.equipmentNumber + '</td>';
-            tr = tr+ '<td>'+ row.equipmentName + '</td>';
-            tr = tr+ '<td>'+ row.ownerName + '</td>';
-            tr = tr+ '<td>'+ row.previousOwnerType + '</td>';
-            tr = tr+ '<td>'+ row.currentOwnerType + '</td>';
-            tr = tr+ '<td>'+ row.createDateTime + '</td>';
-            tr = tr+ '<td>'+ row.lastUpdated + '</td>';
-            tr = tr+ '</tr>';
-            tbody.append(tr);
+//juery语法
+$(document).ready(function () {
+  //make sure change to your own machine ip or dmain url
+  var ipUrl = "http://192.168.233.158"
+  var urlBase = ipUrl+":8080/consumer";
+  var tabs = ["trade", "query"];
+  var resultTables = ["account", "sell", "purchase", "trade"];
+  $("#queryResult").hide();
+  showTab("trade");
+  $("#tradeLink").click(function () {
+    showTab("trade");
+  });
+  $("#queryLink").click(function () {
+    showTab("query");
+  });
+  $("#makeSellPretrade").click(function () {
+    alert("======makeSellPretrade Running======");
+    var tradeUrl = urlBase + "/trade/makePretrade";
+    // var formData = {};
+    // alert(tradeUrl + " using " + $('#trade-role').val());
+    var name = document.getElementById("username").innerText;
+    $.ajax({
+      type: 'POST',
+      url: tradeUrl,
+      data: {
+        name: name,
+        expectPrice: $('#trade-expectPrice').val(),
+        bottomPrice: $('#trade-bottomPrice').val(),
+        amount: $('#trade-amount').val(),
+        cate: 'sell'
+      },
+      success: function (data, status, jqXHR) {
+        // console.log(data);
+        if (status == 'success') {
+          alert("makeSellPretrade successfully");
         }
-      }
-    },
-    error: function(xhr, textStatus, error){
+        // showTab("tradeTest");
+      },
+      error: function (xhr, textStatus, error) {
         console.log(xhr.statusText);
         console.log(textStatus);
         console.log(error);
-        alert("Error: "+ xhr.responseText);
-    }
+        alert("Error: " + xhr.responseText);
+      }
+    });
+    return false;
   });
+
+  $("#makePurchasePretrade").click(function () {
+    alert("======makePurchasePretrade Running======");
+    var tradeUrl = urlBase + "/trade/makePretrade";
+    // var formData = {};
+    // alert(tradeUrl + " using " + $('#trade-role').val());
+    var name = document.getElementById("username").innerText;
+    $.ajax({
+      type: 'POST',
+      url: tradeUrl,
+      data: {
+        name: name,
+        expectPrice: $('#trade-expectPrice').val(),
+        bottomPrice: $('#trade-bottomPrice').val(),
+        amount: $('#trade-amount').val(),
+        cate: 'purchase'
+      },
+      success: function (data, status, jqXHR) {
+        // console.log(data);
+        if (status == 'success') {
+          alert("makePurchasePretrade successfully");
+        }
+        // showTab("tradeTest");
+      },
+      error: function (xhr, textStatus, error) {
+        console.log(xhr.statusText);
+        console.log(textStatus);
+        console.log(error);
+        alert("Error: " + xhr.responseText);
+      }
+    });
+    return false;
+  });
+
+  $("#trade-query").click(function () {
+    reset();
+    var queryUrl = urlBase + "/query/queryHistoryByKey";
+    var role = 'consumer';
+    var cate = 'trade'
+    var name = document.getElementById("username").innerText;
+    var searchKey = cate + '-' + name;
+
+    $.ajax({
+      type: 'GET',
+      url: queryUrl,
+      data: {
+        key: searchKey,
+        role: role,
+        userName: name
+      },
+      success: function (data, status, jqXHR) {
+        alert("history query " + name + " with " + searchKey + " key successfully");
+        if(!data || data.length==0) {
+          $("#queryResultEmpty").show();
+          $("#queryResult").hide();
+        } else {
+          $("#queryResult").show();
+          $("#queryResultEmpty").hide();
+          $("#historyTableTboday").empty();
+          showTable(cate);
+          let tableCate = "#"+cate+"TableTboday";
+          $(tableCate).empty();
+          var tbody = $(tableCate);
+          for (var i = 0; i < data.length; i++) {
+            var tr = showData(cate, data[i]);
+            tbody.append(tr);
+          }
+        }
+      },
+      error: function (xhr, textStatus, error) {
+        console.log(xhr.statusText);
+        console.log(textStatus);
+        console.log(error);
+        alert("Error: " + xhr.responseText);
+      }
+    });
+    return false;
+  });
+
+  $("#sell-query").click(function () {
+    reset();
+    var queryUrl = urlBase + "/query/queryHistoryByKey";
+    var role = 'consumer';
+    var cate = 'sell'
+    var name = document.getElementById("username").innerText;
+    var searchKey = cate + '-' + name;
+
+    $.ajax({
+      type: 'GET',
+      url: queryUrl,
+      data: {
+        key: searchKey,
+        role: role,
+        userName: name
+      },
+      success: function (data, status, jqXHR) {
+        alert("history query " + name + " with " + searchKey + " key successfully");
+        if(!data || data.length==0) {
+          $("#queryResultEmpty").show();
+          $("#queryResult").hide();
+        } else {
+          $("#queryResult").show();
+          $("#queryResultEmpty").hide();
+          $("#historyTableTboday").empty();
+          showTable(cate);
+          let tableCate = "#"+cate+"TableTboday";
+          $(tableCate).empty();
+          var tbody = $(tableCate);
+          for (var i = 0; i < data.length; i++) {
+            var tr = showData(cate, data[i]);
+            tbody.append(tr);
+          }
+        }
+      },
+      error: function (xhr, textStatus, error) {
+        console.log(xhr.statusText);
+        console.log(textStatus);
+        console.log(error);
+        alert("Error: " + xhr.responseText);
+      }
+    });
+    return false;
+  });
+
+  $("#purchase-query").click(function () {
+    reset();
+    var queryUrl = urlBase + "/query/queryHistoryByKey";
+    var role = 'consumer';
+    var cate = 'purchase'
+    var name = document.getElementById("username").innerText;
+    var searchKey = cate + '-' + name;
+
+    $.ajax({
+      type: 'GET',
+      url: queryUrl,
+      data: {
+        key: searchKey,
+        role: role,
+        userName: name
+      },
+      success: function (data, status, jqXHR) {
+        alert("history query " + name + " with " + searchKey + " key successfully");
+        if(!data || data.length==0) {
+          $("#queryResultEmpty").show();
+          $("#queryResult").hide();
+        } else {
+          $("#queryResult").show();
+          $("#queryResultEmpty").hide();
+          $("#historyTableTboday").empty();
+          showTable(cate);
+          let tableCate = "#"+cate+"TableTboday";
+          $(tableCate).empty();
+          var tbody = $(tableCate);
+          for (var i = 0; i < data.length; i++) {
+            var tr = showData(cate, data[i]);
+            tbody.append(tr);
+          }
+        }
+      },
+      error: function (xhr, textStatus, error) {
+        console.log(xhr.statusText);
+        console.log(textStatus);
+        console.log(error);
+        alert("Error: " + xhr.responseText);
+      }
+    });
+    return false;
+  });
+
+  $("#account-query").click(function () {
+    reset();
+    var queryUrl = urlBase + "/query/queryHistoryByKey";
+    var role = 'consumer';
+    var cate = 'account'
+    var name = document.getElementById("username").innerText;
+    var searchKey = cate + '-' + name;
+
+    // var hello = $(this).data('data')
+    // var name = $(cache.get(role));
+    
+    // alert(name);
+    // var cate = $('#query-cate').val();
+
+    $.ajax({
+      type: 'GET',
+      url: queryUrl,
+      data: {
+        key: searchKey,
+        role: role,
+        userName: name
+      },
+      success: function (data, status, jqXHR) {
+        alert("history query " + name + " with " + searchKey + " key successfully");
+        if(!data || data.length==0) {
+          $("#queryResultEmpty").show();
+          $("#queryResult").hide();
+        } else {
+          $("#queryResult").show();
+          $("#queryResultEmpty").hide();
+          $("#historyTableTboday").empty();
+          showTable(cate);
+          let tableCate = "#"+cate+"TableTboday";
+          $(tableCate).empty();
+          var tbody = $(tableCate);
+          for (var i = 0; i < data.length; i++) {
+            var tr = showData(cate, data[i]);
+            tbody.append(tr);
+          }
+        }
+      },
+      error: function (xhr, textStatus, error) {
+        console.log(xhr.statusText);
+        console.log(textStatus);
+        console.log(error);
+        alert("Error: " + xhr.responseText);
+      }
+    });
+    return false;
+  });
+
+  //展示侧边栏所示的大页面
+  function showTab(which) {
+    for (let i in tabs) {
+      if (tabs[i] === which) {
+        $("#" + tabs[i] + "Tab").show();
+      } else {
+        $("#" + tabs[i] + "Tab").hide();
+      }
+    }
+    reset();
+  }
+
+  //展示query结果选定的表格
+  function showTable(which) {
+    for (let i in resultTables) {
+      // alert("#" + resultTables[i]+"Result");
+      if (resultTables[i] === which) {
+        $("#" + resultTables[i]+"Result").show();
+      } else {
+        $("#" + resultTables[i]+"Result").hide();
+      }
+    }
+    // reset();
+  }
+  
+  //展示表格控制函数
+  function showResults(cate){
+    showTable(cate);
+    let tableCate = "#"+cate+"TableTboday";
+    return tableCate;
+  }
+
+  //填充表格数据
+  function showData(id, data){
+    var tr = '<tr>';
+    if(data==null) {
+      tr = tr+ '</tr>';
+      return tr;
+    }
+    if(id=='account'){
+      tr = tr+ '<td>'+ data.name + '</th>';
+      tr = tr+ '<td>'+ data.role + '</td>';
+      tr = tr+ '<td>'+ data.balance + '</td>';
+      tr = tr+ '<td>'+ data.amount + '</td>';
+      tr = tr+ '<td>'+ data.permission + '</td>';
+      tr = tr+ '<td>'+ data.updateTime + '</td>';
+    }
+    else if(id=='sell'){
+      tr = tr+ '<td>'+ data.seller + '</th>';
+      tr = tr+ '<td>'+ data.expectPrice + '</td>';
+      tr = tr+ '<td>'+ data.bottomPrice + '</td>';
+      tr = tr+ '<td>'+ data.amount + '</td>';
+      tr = tr+ '<td>'+ data.available + '</td>';
+      tr = tr+ '<td>'+ data.createDateTime + '</td>';
+    }
+    else if(id=='purchase'){
+      tr = tr+ '<td>'+ data.buyer + '</td>';
+      tr = tr+ '<td>'+ data.expectPrice + '</td>';
+      tr = tr+ '<td>'+ data.bottomPrice + '</td>';
+      tr = tr+ '<td>'+ data.amount + '</td>';
+      tr = tr+ '<td>'+ data.available + '</td>';
+      tr = tr+ '<td>'+ data.createDateTime + '</td>';
+    }
+    else if(id=='trade'){
+      tr = tr+ '<td>'+ data.seller + '</th>';
+      tr = tr+ '<td>'+ data.buyer + '</td>';
+      tr = tr+ '<td>'+ data.price + '</td>';
+      tr = tr+ '<td>'+ data.amount + '</td>';
+      tr = tr+ '<td>'+ data.createDateTime + '</td>';
+    }
+    tr = tr+ '</tr>';
+    return tr;
+  }
+
+  function reset() {
+    $("#queryResultEmpty").hide();
+    $("#queryResult").hide();
+  }
 });
-function showTab(which) {
-   for(let i in tabs) {
-     if(tabs[i]===which) {
-       $("#"+tabs[i] + "Tab").show();
-     } else {
-       $("#"+tabs[i] + "Tab").hide();
-     }
-   }
-   reset();
-}
-function reset() {
-   $("#queryResultEmpty").hide();
-   $("#queryResult").hide();
-   $("#queryHistoryResultEmpty").hide();
-   $("#queryHistoryResult").hide();
-}
-});
-$(document).ajaxStart(function(){
+$(document).ajaxStart(function () {
   $("#wait").css("display", "block");
 });
-$(document).ajaxComplete(function(){
+$(document).ajaxComplete(function () {
   $("#wait").css("display", "none");
 });

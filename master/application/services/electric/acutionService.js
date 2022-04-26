@@ -13,8 +13,9 @@ class AcutionService {
         console.log("================== begin to simulate trade ==================")
         let tradeRecord = [], nowSellRestNum, nowBuyRestNum;
         var bestPrice = 0, roundNum = 1;
+        let k = 0.91, maxtry = 0;
         while (sellBids.length != 0 && buyBids.length != 0) {
-            let m = sellBids.length, n = buyBids.length, k = 0.91;
+            let m = sellBids.length, n = buyBids.length;
             let sid = 0, bid = 0;
             let sellRest = [], buyRest = [];
             
@@ -26,8 +27,8 @@ class AcutionService {
                 if (nowSeller && nowBuyer && nowSeller.expectPrice <= nowBuyer.expectPrice) {
                     let tradeDetail = {};
                     tradeDetail.round = roundNum;
-                    tradeDetail.seller = nowSeller.id;
-                    tradeDetail.buyer = nowBuyer.id;
+                    tradeDetail.seller = nowSeller.seller;
+                    tradeDetail.buyer = nowBuyer.buyer;
                     bestPrice = tradeDetail.price = parseFloat(((nowSeller.expectPrice + nowBuyer.expectPrice) / 2).toFixed(2));
                     if (nowSeller.amount > nowBuyer.amount) {
                         tradeDetail.amount = nowBuyer.amount, bid += 1;
@@ -71,10 +72,12 @@ class AcutionService {
                         tmpMin = Math.min(tmpMin, buyBids[i].expectPrice);
                     }
                     buySum = buySum - tmpMax - tmpMin;
-                    bestPrice = (sellSum/(sellBids.length-2)+buySum/(buyBids.length-2))/2;
+                    bestPrice = parseFloat(((sellSum/(sellBids.length-2)+buySum/(buyBids.length-2))/2).toFixed(2));
                 }
-                //直接将下一轮调整为最大干预交易
-                else if(k!=1) k = 1;
+                //三次调整参数
+                else if(maxtry==0) k = 1, maxtry += 1;
+                else if(maxtry==1) k = 1.5, maxtry += 1;
+                else if(maxtry==2) k = 2, maxtry += 1;
                 else done = 1;
     
             }
@@ -122,23 +125,33 @@ class AcutionService {
         // var data = this.generate(134, 120);
         // console.log(data);
         console.log("================= begin to excute trade strategy================")
-        let sellData = await querySvcInstance.queryPartialKey('admin', 'admin','sell-', 'sell-z');
+        let sellDataTmp = await querySvcInstance.queryPartialKey('wizard', 'admin','sell-', 'sell-z'), sellData=[], id1 = 0;
+        for(let i in sellDataTmp){
+            if(sellDataTmp[i]==null) continue;
+            sellData[id1++] = sellDataTmp[i];
+        }
         sellData = sellData.sort((a, b) =>{
             return a.expectPrice - b.expectPrice;
         });
-        let purchaseData = await querySvcInstance.queryPartialKey('admin', 'admin','purchase-', 'purchase-z')
+        let purchaseDataTmp = await querySvcInstance.queryPartialKey('wizard', 'admin','purchase-', 'purchase-z'), purchaseData=[], id2 = 0;
+        for(let i in purchaseDataTmp){
+            if(purchaseDataTmp[i]==null) continue;
+            purchaseData[id2++] = purchaseDataTmp[i];
+        }
         purchaseData = purchaseData.sort((a, b) =>{
             return b.expectPrice - a.expectPrice;
         });
         console.log('Seller: '), console.log(sellData);
         console.log('Buyer: '), console.log(purchaseData);
         let res = this.trade(sellData, purchaseData);
-        // console.log(res);
+        console.log(res);
 
         for(let i in res){
             console.log(res[i])
             await tradeSvcInstance.makeTrade(res[i].seller, res[i].buyer, res[i].price, res[i].amount);
         }
+
+        return res;
 
         // sellData = await querySvcInstance.queryPartialKey('wizard', 'producer','sell-', 'sell-z');
         // purchaseData = await querySvcInstance.queryPartialKey('wizard', 'producer','purchase-', 'purchase-z')

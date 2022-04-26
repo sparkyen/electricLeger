@@ -36,23 +36,26 @@ function randomString(length) {
 
 async function dataGenerater(cate, num, minPrice, maxPrice, minAmount, maxAmount) {
     let id = 1;
+    let role;
     // data = [];
     while (id <= num) {
         let dataDetail = {};
         dataDetail.name = randomString(3), id = id + 1;
         dataDetail.expectPrice = randomFloat(minPrice, maxPrice);
         if (cate == 'sell') {
+            role = 'producer'
             dataDetail.bottomPrice = randomFloat(minPrice, dataDetail.expectPrice);
         }
         else {
+            role = 'consumer'
             dataDetail.bottomPrice = randomFloat(dataDetail.expectPrice, maxPrice);
         }
             
         dataDetail.amount = randomNum(minAmount, maxAmount);
         console.log('============== begin to generat data ==============');
-        await accountSvcInstance.regAccount(dataDetail.name, 'consumer');
-        await accountSvcInstance.initAccount(dataDetail.name, 'consumer')
-        await accountSvcInstance.activeAccount(dataDetail.name, 'consumer');
+        await accountSvcInstance.regAccount(dataDetail.name, role);
+        await accountSvcInstance.initAccount(dataDetail.name, role)
+        await accountSvcInstance.activeAccount(dataDetail.name, role);
         await tradeSvcInstance.makePreTrade(dataDetail.name, cate, dataDetail.expectPrice, dataDetail.bottomPrice, dataDetail.amount);
         // data.push(dataDetail);
         
@@ -80,8 +83,8 @@ async function generate(sellerNum, buyerNum) {
 }
 
 async function main() {
-    // await generate(6, 4);
-    acutionSvcInstance.excute();
+    // await generate(12, 15);
+    await acutionSvcInstance.excute();
 }
 
 main();

@@ -10,14 +10,11 @@ $(document).ready(function () {
   //make sure change to your own machine ip or dmain url
   var ipUrl = "http://192.168.233.158"
   var urlBase = ipUrl+":8080/admin";
-  var tabs = ["accountTest", "tradeTest", "query"];
+  var tabs = ["account", "query"];
   var resultTables = ["account", "sell", "purchase", "trade"];
   $("#queryResult").hide();
-  $("#accountTestLink").click(function () {
-    showTab("accountTest");
-  });
-  $("#tradeTestLink").click(function () {
-    showTab("tradeTest");
+  $("#accountLink").click(function () {
+    showTab("account");
   });
   $("#queryLink").click(function () {
     showTab("query");
@@ -26,14 +23,13 @@ $(document).ready(function () {
     alert("======activeButton Running======");
     var accountUrl = urlBase + "/account/activeAccount";
     const userName = $('#account-username').val();
-    const role = $('#account-role').val()
     // alert(accountUrl);
     $.ajax({
       type: 'POST',
       url: accountUrl,
       data: {
         userName: userName,
-        role: role
+        role: 'admin'
       },
       success: function (data, status, jqXHR) {
         // console.log(status);
@@ -57,14 +53,13 @@ $(document).ready(function () {
     alert("======initButton Running======");
     var accountUrl = urlBase + "/account/initAccount";
     const userName = $('#account-username').val();
-    const role = $('#account-role').val();
     // alert(accountUrl);
     $.ajax({
       type: 'POST',
       url: accountUrl,
       data: {
         userName: userName,
-        role: role
+        role: 'admin'
       },
       success: function (data, status, jqXHR) {
         // console.log(data);
@@ -87,7 +82,6 @@ $(document).ready(function () {
     alert("======rechargeButton Running======");
     var accountUrl = urlBase + "/account/rechargeAccount";
     const userName = $('#account-username').val();
-    const role = $('#account-role').val();
     const money = $('#account-money').val();
     // alert(accountUrl);
     $.ajax({
@@ -95,75 +89,13 @@ $(document).ready(function () {
       url: accountUrl,
       data: {
         userName: userName,
-        role: role,
+        role: 'admin',
         money: money
       },
       success: function (data, status, jqXHR) {
         // console.log(data);
         if (status == 'success') {
           alert("recharge " + userName + " with " + money + " money successfully");
-        }
-        // showTab("tradeTest");
-      },
-      error: function (xhr, textStatus, error) {
-        console.log(xhr.statusText);
-        console.log(textStatus);
-        console.log(error);
-        alert("Error: " + xhr.responseText);
-      }
-    });
-    return false;
-  });
-
-  $("#makeTrade").click(function () {
-    alert("======makeTradeButton Running======");
-    var tradeUrl = urlBase + "/trade/makeTrade";
-    // var formData = {}
-    // alert(tradeUrl);
-    $.ajax({
-      type: 'POST',
-      url: tradeUrl,
-      data: {
-        buyer: $('#trade-buyer').val(),
-        seller: $('#trade-seller').val(),
-        role: $('#trade-role').val()
-      },
-      success: function (data, status, jqXHR) {
-        // console.log(data);
-        if (status == 'success') {
-          alert("makeTrade successfully");
-        }
-        // showTab("tradeTest");
-      },
-      error: function (xhr, textStatus, error) {
-        console.log(xhr.statusText);
-        console.log(textStatus);
-        console.log(error);
-        alert("Error: " + xhr.responseText);
-      }
-    });
-    return false;
-  });
-
-  $("#makePretrade").click(function () {
-    alert("======makePretradeButton Running======");
-    var tradeUrl = urlBase + "/trade/makePretrade";
-    // var formData = {};
-    // alert(tradeUrl + " using " + $('#trade-role').val());
-    $.ajax({
-      type: 'POST',
-      url: tradeUrl,
-      data: {
-        buyer: $('#trade-buyer').val(),
-        seller: $('#trade-seller').val(),
-        price: $('#trade-price').val(),
-        amount: $('#trade-amount').val(),
-        role: $('#trade-role').val()
-      },
-      success: function (data, status, jqXHR) {
-        // console.log(data);
-        if (status == 'success') {
-          alert("makePretrade successfully");
         }
         // showTab("tradeTest");
       },
@@ -188,12 +120,13 @@ $(document).ready(function () {
       url: queryUrl,
       data: {
         key: searchKey,
-        role: $('#query-role').val(),
+        role: 'admin',
         userName: $('#query-username').val()
       },
       success: function (data, status, jqXHR) {
         alert("single query " + $('#query-username').val() + "with " + searchKey + " key successfully");
-        if(!data || !data.Record) {
+        // if(!data || !data.Record) {
+        if(!data) {
           $("#queryResultEmpty").show();
           $("#queryResult").hide();
         } else {
@@ -203,7 +136,8 @@ $(document).ready(function () {
           let tableCate = "#"+cate+"TableTboday";
           $(tableCate).empty();
           var tbody = $(tableCate);
-          var tr = showData(cate, data.Record);
+          var tr = showData(cate, data);
+          // var tr = showData(cate, data.Record);
           // for (var i = 0; i < data.length; i++) {
           tbody.append(tr);
           // }
@@ -230,7 +164,7 @@ $(document).ready(function () {
       url: queryUrl,
       data: {
         key: searchKey,
-        role: $('#query-role').val(),
+        role: 'admin',
         userName: $('#query-username').val()
       },
       success: function (data, status, jqXHR) {
@@ -274,7 +208,7 @@ $(document).ready(function () {
       url: queryUrl,
       data: {
         key: searchKey,
-        role: $('#query-role').val(),
+        role: 'admin',
         userName: $('#query-username').val()
       },
       success: function (data, status, jqXHR) {
@@ -340,7 +274,12 @@ $(document).ready(function () {
 
   //填充表格数据
   function showData(id, data){
+
     var tr = '<tr>';
+    if(data==null) {
+      tr = tr+ '</tr>';
+      return tr;
+    }
     if(id=='account'){
       tr = tr+ '<td>'+ data.name + '</th>';
       tr = tr+ '<td>'+ data.role + '</td>';
@@ -351,14 +290,16 @@ $(document).ready(function () {
     }
     else if(id=='sell'){
       tr = tr+ '<td>'+ data.seller + '</th>';
-      tr = tr+ '<td>'+ data.price + '</td>';
+      tr = tr+ '<td>'+ data.expectPrice + '</td>';
+      tr = tr+ '<td>'+ data.bottomPrice + '</td>';
       tr = tr+ '<td>'+ data.amount + '</td>';
       tr = tr+ '<td>'+ data.available + '</td>';
       tr = tr+ '<td>'+ data.createDateTime + '</td>';
     }
     else if(id=='purchase'){
       tr = tr+ '<td>'+ data.buyer + '</td>';
-      tr = tr+ '<td>'+ data.price + '</td>';
+      tr = tr+ '<td>'+ data.expectPrice + '</td>';
+      tr = tr+ '<td>'+ data.bottomPrice + '</td>';
       tr = tr+ '<td>'+ data.amount + '</td>';
       tr = tr+ '<td>'+ data.available + '</td>';
       tr = tr+ '<td>'+ data.createDateTime + '</td>';
