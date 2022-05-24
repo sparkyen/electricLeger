@@ -18,8 +18,11 @@ const fixtures = path.resolve(__dirname, '../../../../pln/organizations');
 const authService = require('./authService.js');
 const authSvcInstance = new authService();
 
+const crypto = require('crypto');
+const hash = crypto.createHash('md5');
+
 class accountService {
-  async regAccount(user, role) {
+  async regAccount(user, passwd, role) {
     console.log("============= regAccount > user: "+user+", role: "+role+" ==================");
     try {
       if (!user || user.length < 1) {
@@ -43,7 +46,9 @@ class accountService {
       const certificate = fs.readFileSync(path.join(credPath, '/msp/signcerts/User1@org' + orgId + '.example.com-cert.pem')).toString();
       const privateKey = fs.readFileSync(path.join(credPath, '/msp/keystore/priv_sk')).toString();
       // Load credentials into wallet
-      const identityLabel = user;
+      // const identityLabel = user;
+      hash.update(user+passwd);
+      const identityLabel = hash.digest('hex');
       const identity = {
         credentials: {
           certificate,

@@ -13,13 +13,14 @@ account.post('/regAccount', async (req, res, next) => {
      console.log(req.body.userName);
      console.log(req.body.role);
      var userName = req.body.userName;
+     var passwd = req.body.passwd;
      var role = req.body.role;
      try {
        if(!userName || userName.lenth<1) {
         console.log("USER MISSING");
         return res.status(500).json("Fill in User please!");
        } else {
-        var result = await accountSvcInstance.regAccount(userName, role);
+        var result = await accountSvcInstance.regAccount(userName, passwd, role);
         // console.log(result);
         let msg = 'User '+ userName + ' was successfully registered and enrolled and is ready to intreact with the fabric network';
         console.log(msg);

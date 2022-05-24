@@ -133,10 +133,10 @@ function trade(sellBids, buyBids) {
 
 function generate() {
     var data = [];
-    var sellerData = dataGenerater('seller', 123, 4.5, 9.8, 120, 240).sort(function (a, b) {
+    var sellerData = dataGenerater('seller', 13, 4.5, 9.8, 120, 240).sort(function (a, b) {
         return a.expectPrice - b.expectPrice;
     });
-    var buyerData = dataGenerater('buyer', 98, 2.3, 7.8, 50, 130).sort(function (a, b) {
+    var buyerData = dataGenerater('buyer', 15, 2.3, 7.8, 50, 130).sort(function (a, b) {
         return b.expectPrice - a.expectPrice;
     });
     data.push(sellerData), data.push(buyerData);
